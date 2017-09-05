@@ -5,24 +5,6 @@ var game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: p
 var cursors;
 var size = new Phaser.Rectangle();
 
-//horizontal tile shaped level
-var levelData=
-    [
-        [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
-        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
-        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
-        [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1]
-    ];
-
 var hexagonWidth = 80;
 var hexagonHeight = 70;
 var sectorWidth = hexagonWidth*3/4;
@@ -75,76 +57,33 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
 
-    //board = new Board(game, gridSizeX, gridSizeY);
-
-    hexagonGroup = createHexagonGroup(game, gridSizeX, gridSizeY, hexagonWidth, hexagonHeight);
-    setHexagonGroupPosition(hexagonGroup, game.height, game.width, hexagonHeight, hexagonWidth, gridSizeY, gridSizeX);
-
-    marker = createMarker(game);
-    hexagonGroup.add(marker);
+    board = new Board(game, gridSizeX, gridSizeY);
 
     unit = createUnit(game, validAssetNames.cube);
-    hexagonGroup.add(unit);
-
-    placeUnit(unit, 3, 4);
-
+    board.addSpriteToBoard(unit);
+    board.placeSprite(unit, 0, 0);
+    // game.input.onTap.add(() => {
+    //     console.log('TAP');
+    //     board.updateSpriteToBoardPosition(unit, game.input.worldX, game.input.worldY);
+    // });
+    var currentSelectedUnit = null;
     game.input.onTap.add(() => {
         console.log('TAP');
-        selectUnit();
+        if (!currentSelectedUnit) {
+            console.log('current piece is null, try to select one from the game');
+            currentSelectedUnit = board.selectGamePiece(game.input.worldX, game.input.worldY);
+        }
+        else {
+            console.log('we have a piece, try to place the piece onto the board');
+            board.updateSpriteToBoardPosition(currentSelectedUnit, game.input.worldX, game.input.worldY);
+            currentSelectedUnit = null;
+        }
     });
 
-    moveIndex = game.input.addMoveCallback(checkHex, this);
+    marker = createMarker(game);
+    board.addSpriteToBoardOverlay(marker);
+    moveIndex = game.input.addMoveCallback(updateMarkerToNewHexPosition, this);
     console.log('moveIndex: ' + moveIndex);
-}
-
-function createHexagonGroup(phaserGame, gridSizeX, gridSizeY, hexagonWidth, hexagonHeight) {
-    var hexagonGridGroup = phaserGame.add.group();
-    for (var rowPos = 0; rowPos < gridSizeX/2; rowPos++) {
-        for (var colPos = 0; colPos < gridSizeY; colPos++) {
-            if (canPlaceHexagonTile(gridSizeX, rowPos, colPos)) {
-                var hexagon = createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPos, colPos);
-                hexagonGridGroup.add(hexagon);
-            }
-        }
-    }
-
-    return hexagonGridGroup;
-}
-
-/**
- * if the amount of tiles across (the x axis) is even OR
- * the row position + 1 is still less than half the ammount of tiles across (the x axis) OR
- * the y position is even THEN...
- * we can create a tile OTHERWISE...
- * we can't create a tile.
- *
- * @param maximumTilesOnXAxis
- * @param rowPosition
- * @param colPosition
- * @returns {boolean}
- */
-function canPlaceHexagonTile(maximumTilesOnXAxis, rowPosition, colPosition) {
-    return maximumTilesOnXAxis%2 === 0 || rowPosition+1 < maximumTilesOnXAxis/2 || colPosition%2 === 0
-}
-
-function createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPosition, colPosition) {
-    var hexagonX = (hexagonWidth * rowPosition * 1.5) + (hexagonWidth/4*3) * (colPosition%2);
-    var hexagonY = hexagonHeight * colPosition/2;
-    var hexagon = phaserGame.add.sprite(hexagonX, hexagonY, 'hexagon');
-
-    return hexagon;
-}
-
-function setHexagonGroupPosition(hexagonGroup, gameHeight, gameWidth, hexagonHeight, hexagonWidth, gridSizeY, gridSizeX) {
-    hexagonGroup.y = (gameHeight - hexagonHeight * Math.ceil(gridSizeY/2))/2;
-    if (gridSizeY%2 === 0) {
-        hexagonGroup.y -= hexagonHeight/4;
-    }
-
-    hexagonGroup.x = (gameWidth-Math.ceil(gridSizeX/2)*hexagonWidth-Math.floor(gridSizeX/2)*hexagonWidth/2)/2;
-    if (gridSizeX%2 === 0) {
-        hexagonGroup.x -= hexagonWidth/8;
-    }
 }
 
 function createMarker(phaserGame) {
@@ -162,102 +101,8 @@ function createUnit(phaserGame) {
     return unit;
 }
 
-function checkHex() {
-    var candidateX = Math.floor((game.input.worldX-hexagonGroup.x)/sectorWidth);
-    var candidateY = Math.floor((game.input.worldY-hexagonGroup.y)/sectorHeight);
-
-    var deltaX = (game.input.worldX-hexagonGroup.x)%sectorWidth;
-    var deltaY = (game.input.worldY-hexagonGroup.y)%sectorHeight;
-
-    if (candidateX%2 === 0) {
-        if (deltaX < ((hexagonWidth/4) - deltaY*gradient)) {
-            candidateX--;
-            candidateY--;
-        }
-        if (deltaX < ((-hexagonWidth/4) + deltaY*gradient)) {
-            candidateX--;
-        }
-    }
-    else {
-        if (deltaY >= hexagonHeight/2) {
-            if (deltaX < (hexagonWidth/2 - deltaY*gradient)) {
-                candidateX--;
-            }
-        }
-        else {
-            if (deltaX < deltaY*gradient) {
-                candidateX--;
-            }
-            else {
-                candidateY--;
-            }
-        }
-    }
-
-    placeMarker(candidateX, candidateY);
-}
-
-function placeMarker(posX, posY) {
-    if(posX < 0 || posY < 0 || posX >= gridSizeX || posY > columns[posX%2]-1) {
-        marker.visible=false;
-    }
-    else{
-        marker.visible=true;
-        marker.x = hexagonWidth/4*3*posX+hexagonWidth/2;
-        marker.y = hexagonHeight*posY;
-        if(posX%2 === 0){
-            marker.y += hexagonHeight/2;
-        }
-        else{
-            marker.y += hexagonHeight;
-        }
-    }
-}
-
-function selectUnit() {
-    console.log('try to select UNIT');
-    console.log('input x: '+game.input.worldX);
-    console.log('input y: '+game.input.worldY);
-    var candidateX = Math.floor((game.input.worldX-hexagonGroup.x)/sectorWidth);
-    var candidateY = Math.floor((game.input.worldY-hexagonGroup.y)/sectorHeight);
-
-    var deltaX = (game.input.worldX-hexagonGroup.x)%sectorWidth;
-    var deltaY = (game.input.worldY-hexagonGroup.y)%sectorHeight;
-
-    if (candidateX%2 === 0) {
-        if (deltaX < ((hexagonWidth/4) - deltaY*gradient)) {
-            candidateX--;
-            candidateY--;
-        }
-        if (deltaX < ((-hexagonWidth/4) + deltaY*gradient)) candidateX--;
-    }
-    else {
-        if (deltaY >= hexagonHeight/2){
-            if (deltaX < (hexagonWidth/2 - deltaY*gradient)) candidateX--;
-        }
-        else {
-            if (deltaX < deltaY*gradient) candidateX--;
-            else candidateY--;
-        }
-    }
-
-    placeUnit(unit, candidateX, candidateY);
-}
-
-function placeUnit(unit, posX, posY, verbose) {
-    if (verbose) console.log('try to place UNIT on ('+posX+', '+posY+')');
-    if (outofBounds(posX, posY)) {
-        if (verbose) console.log('The UNIT is out of bounds, hide the unit');
-        unit.visible = false;
-    }
-    else {
-        unit.visible = true;
-        unit.x = hexagonWidth*(3/4)*posX + hexagonWidth/2;
-        unit.y = hexagonHeight*posY;
-
-        if (posX%2 === 0) unit.y += hexagonHeight/2;
-        else unit.y += hexagonHeight;
-    }
+function updateMarkerToNewHexPosition() {
+    board.updateSpriteToBoardPosition(marker, game.input.worldX, game.input.worldY);
 }
 
 function outofBounds(posX, posY) {
@@ -312,3 +157,22 @@ function transpose(array) {
         }
     );
 }
+
+
+//horizontal tile shaped level
+var levelData =
+    [
+        [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
+        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
+        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
+        [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+        [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
+        [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1]
+    ];

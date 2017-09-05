@@ -19,19 +19,47 @@ Board = function (game, gridSizeX, gridSizeY) {
     this.gamePiecesGroup = game.add.group();
     this.hexagonGroup.add(this.gamePiecesGroup);
 
+    this.addSpriteToBoardOverlay = function(sprite) {
+        this.hexagonGroup.add(sprite);
+    };
+
     this.addSpriteToBoard = function(sprite) {
         this.gamePiecesGroup.add(sprite);
+    };
+
+    this.getBoardXPosition = function() {
+        return this.hexagonGroup.x;
+    };
+
+    this.getBoardYPosition = function() {
+        return this.hexagonGroup.y;
     };
 
     this.selectGamePiece = function(worldX, worldY) {
         console.log('try to select UNIT');
         console.log('input x: '+worldX);
         console.log('input y: '+worldY);
-        var candidateX = Math.floor((worldX - this.hexagonGroup.x)/this.sectorWidth);
-        var candidateY = Math.floor((worldY - this.hexagonGroup.y)/this.sectorHeight);
 
-        var deltaX = (game.input.worldX - this.hexagonGroup.x)%this.sectorWidth;
-        var deltaY = (game.input.worldY - this.hexagonGroup.y)%this.sectorHeight;
+        var candidatePosition = this.findBoardPosition(worldX, worldY);
+        var boardCoordinates = translateBoardPostionToBoardCoordinates(
+            candidatePosition.x, candidatePosition.y, this.hexagonWidth, this.hexagonHeight);
+
+        return getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
+    };
+
+    this.updateSpriteToBoardPosition = function(sprite, worldX, worldY) {
+        var boardPosition = this.findBoardPosition(worldX, worldY);
+        this.placeSprite(sprite, boardPosition.x, boardPosition.y);
+    };
+
+    this.findBoardPosition = function(worldX, worldY) {
+        var boardXPosition = this.getBoardXPosition();
+        var boardYPosition = this.getBoardYPosition();
+        var candidateX = Math.floor((worldX - boardXPosition)/this.sectorWidth);
+        var candidateY = Math.floor((worldY - boardYPosition)/this.sectorHeight);
+
+        var deltaX = (worldX - boardXPosition) % this.sectorWidth;
+        var deltaY = (worldY - boardYPosition) % this.sectorHeight;
 
         if (candidateX%2 === 0) {
             if (deltaX < ((this.hexagonWidth/4) - deltaY*this.gradient)) {
@@ -49,8 +77,7 @@ Board = function (game, gridSizeX, gridSizeY) {
                 else candidateY--;
             }
         }
-
-        return getGamePiece(this.gamePiecesGroup, candidateX, candidateY);
+        return {x:candidateX, y:candidateY};
     };
 
     this.placeSprite = function(sprite, posX, posY, verbose) {
@@ -62,14 +89,24 @@ Board = function (game, gridSizeX, gridSizeY) {
         }
         else {
             sprite.visible = true;
-            sprite.x = this.hexagonWidth*(3/4)*posX + this.hexagonWidth/2;
-            sprite.y = this.hexagonHeight*posY;
+            var boardCoordinates = translateBoardPostionToBoardCoordinates(
+                posX, posY, this.hexagonWidth, this.hexagonHeight);
 
-            if (posX%2 === 0) sprite.y += this.hexagonHeight/2;
-            else sprite.y += this.hexagonHeight;
+            sprite.x = boardCoordinates.x;
+            sprite.y = boardCoordinates.y;
         }
     };
 };
+
+function translateBoardPostionToBoardCoordinates(boardPositionX, boardPositionY, hexagonWidth, hexagonHeight) {
+    var boardCoordinateX = hexagonWidth*(3/4)*boardPositionX + hexagonWidth/2;
+    var boardCoordinateY = hexagonHeight*boardPositionY;
+
+    if (boardPositionX%2 === 0) boardCoordinateY += hexagonHeight/2;
+    else boardCoordinateY += hexagonHeight;
+
+    return {x:boardCoordinateX, y:boardCoordinateY};
+}
 
 function outOfBounds(posX, posY, xTiles, columns) {
     return posX < 0 || posY < 0 || posX >= xTiles || posY > columns[posX%2] - 1;
@@ -129,7 +166,9 @@ function createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPosition,
 }
 
 function getGamePiece(gamePiecesGroup, xPos, yPos) {
+    var gamePiece = null;
     gamePiecesGroup.forEach((piece) => {
-        if (piece.x === xPos && piece.y === yPos) return piece;
+        if (piece.x === xPos && piece.y === yPos) return gamePiece = piece;
     });
+    return gamePiece;
 }

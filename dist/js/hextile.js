@@ -1,5 +1,5 @@
 //  Here is a custom game object
-HexTile = function (game, x, y, tileImage,isVertical, i,j, type) {
+HexTile = function (game, x, y, tileImage, isVertical, i, j, type) {
 
     Phaser.Sprite.call(this, game, x, y, tileImage);
 
