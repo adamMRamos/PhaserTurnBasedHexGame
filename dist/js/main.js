@@ -33,6 +33,7 @@ validAssetNames.hexagon     =   {tag:'hexagon', path:'dirt2'};
 validAssetNames.marker      =   {tag:'marker', path:'marker'};
 validAssetNames.hexMarker   =   {tag:'hexMarker', path:'hexMarker'};
 validAssetNames.cube        =   {tag:'cube', path:'cube'};
+validAssetNames.redCube     =   {tag:'redCube', path:'redCube'};
 validAssetNames.diamond     =   {tag:'diamond', path:'diamond'};
 validAssetNames.sphere      =   {tag:'sphere', path:'sphere'};
 validAssetNames.triangle    =   {tag:'triangle', path:'triangle'};
@@ -59,25 +60,17 @@ function create() {
 
     board = new Board(game, gridSizeX, gridSizeY);
 
-    unit = createUnit(game, validAssetNames.cube);
+    unit = createUnit(game, validAssetNames.cube.tag);
     board.addSpriteToBoard(unit);
-    board.placeSprite(unit, 0, 0);
-    // game.input.onTap.add(() => {
-    //     console.log('TAP');
-    //     board.updateSpriteToBoardPosition(unit, game.input.worldX, game.input.worldY);
-    // });
+    board.placeSpriteOnBoard(unit, 0, 0);
+
+    var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
+    board.addSpriteToBoard(enemyUnit);
+    board.placeSpriteOnBoard(enemyUnit, 1, 1);
+
     var currentSelectedUnit = null;
     game.input.onTap.add(() => {
-        console.log('TAP');
-        if (!currentSelectedUnit) {
-            console.log('current piece is null, try to select one from the game');
-            currentSelectedUnit = board.selectGamePiece(game.input.worldX, game.input.worldY);
-        }
-        else {
-            console.log('we have a piece, try to place the piece onto the board');
-            board.updateSpriteToBoardPosition(currentSelectedUnit, game.input.worldX, game.input.worldY);
-            currentSelectedUnit = null;
-        }
+        currentSelectedUnit = tryToSelectOrMoveAUnit(currentSelectedUnit);
     });
 
     marker = createMarker(game);
@@ -94,19 +87,30 @@ function createMarker(phaserGame) {
     return marker;
 }
 
-function createUnit(phaserGame) {
-    var unit = phaserGame.add.sprite(100,50,validAssetNames.cube.tag);
+function createUnit(phaserGame, assetTag) {
+    var unit = phaserGame.add.sprite(100, 50, assetTag);
     unit.anchor.setTo(0.5);
 
     return unit;
 }
 
-function updateMarkerToNewHexPosition() {
-    board.updateSpriteToBoardPosition(marker, game.input.worldX, game.input.worldY);
+function tryToSelectOrMoveAUnit(currentSelectedUnit) {
+    var worldX = game.input.worldX;
+    var worldY = game.input.worldY;
+    console.log('TAP');
+    if (!currentSelectedUnit) {
+        console.log('current piece is null, try to select one from the game');
+        return board.selectGamePiece(worldX, worldY);
+    }
+    else {
+        console.log('we have a piece, try to place the piece onto the board');
+        board.tryToMoveGamePiece(currentSelectedUnit, worldX, worldY);
+        return null;
+    }
 }
 
-function outofBounds(posX, posY) {
-    return posX < 0 || posY < 0 || posX >= gridSizeX || posY > columns[posX%2] - 1;
+function updateMarkerToNewHexPosition() {
+    board.updateSpriteToBoardPosition(marker, game.input.worldX, game.input.worldY);
 }
 
 function update() {

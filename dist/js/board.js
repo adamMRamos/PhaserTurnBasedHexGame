@@ -47,9 +47,25 @@ Board = function (game, gridSizeX, gridSizeY) {
         return getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
     };
 
+    this.tryToMoveGamePiece = function (unitSprite, worldX, worldY) {
+        var boardPosition = this.findBoardPosition(worldX, worldY);
+        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns)) {
+
+            var boardCoordinates = translateBoardPostionToBoardCoordinates(
+                boardPosition.x, boardPosition.y, this.hexagonWidth, this.hexagonHeight);
+            var positionIsOccupied = positionIsOccupiedByGamePiece(
+                this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y)
+            if (!positionIsOccupied) {
+                console.log('the position isnt occupied');
+                this.updateSpriteToBoardPosition(unitSprite, worldX, worldY);
+            }
+            else console.log('the position is occupied!!!');
+        }
+    };
+
     this.updateSpriteToBoardPosition = function(sprite, worldX, worldY) {
         var boardPosition = this.findBoardPosition(worldX, worldY);
-        this.placeSprite(sprite, boardPosition.x, boardPosition.y);
+        this.placeSpriteOnBoard(sprite, boardPosition.x, boardPosition.y);
     };
 
     this.findBoardPosition = function(worldX, worldY) {
@@ -80,18 +96,17 @@ Board = function (game, gridSizeX, gridSizeY) {
         return {x:candidateX, y:candidateY};
     };
 
-    this.placeSprite = function(sprite, posX, posY, verbose) {
-        if (verbose) console.log('try to place UNIT on ('+posX+', '+posY+')');
+    this.placeSpriteOnBoard = function(sprite, boardPositionX, boardPositionY, verbose) {
+        if (verbose) console.log('try to place UNIT on ('+boardPositionX+', '+boardPositionY+')');
+        var boardCoordinates = translateBoardPostionToBoardCoordinates(
+            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight);
 
-        if (outOfBounds(posX, posY, this.xTiles, this.columns)) {
+        if (outOfBounds(boardPositionX, boardPositionY, this.xTiles, this.columns)) {
             if (verbose) console.log('The UNIT is out of bounds, hide the unit');
             sprite.visible = false;
         }
         else {
             sprite.visible = true;
-            var boardCoordinates = translateBoardPostionToBoardCoordinates(
-                posX, posY, this.hexagonWidth, this.hexagonHeight);
-
             sprite.x = boardCoordinates.x;
             sprite.y = boardCoordinates.y;
         }
@@ -165,10 +180,14 @@ function createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPosition,
     return hexagon;
 }
 
-function getGamePiece(gamePiecesGroup, xPos, yPos) {
+function positionIsOccupiedByGamePiece(gamePiecesGroup, boardCoordinateX, boardCoordinateY) {
+    return getGamePiece(gamePiecesGroup,boardCoordinateX, boardCoordinateY) !== null;
+}
+
+function getGamePiece(gamePiecesGroup, boardCoordinateX, boardCoordinateY) {
     var gamePiece = null;
     gamePiecesGroup.forEach((piece) => {
-        if (piece.x === xPos && piece.y === yPos) return gamePiece = piece;
+        if (piece.x === boardCoordinateX && piece.y === boardCoordinateY) return gamePiece = piece;
     });
     return gamePiece;
 }
