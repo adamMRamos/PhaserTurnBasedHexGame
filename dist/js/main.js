@@ -60,13 +60,15 @@ function create() {
 
     board = new Board(game, gridSizeX, gridSizeY);
 
-    unit = createUnit(game, validAssetNames.cube.tag);
+    //unit = createUnit(game, validAssetNames.cube.tag);
+    unit = new Unit(game, 100, 50, validAssetNames.cube.tag);
     board.addSpriteToBoard(unit);
-    board.placeSpriteOnBoard(unit, 0, 0);
+    board.placeGamePieceOntoPosition(unit, 0, 0);
 
-    var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
+    //var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
+    var enemyUnit = new Unit(game, 100, 50, validAssetNames.redCube.tag);
     board.addSpriteToBoard(enemyUnit);
-    board.placeSpriteOnBoard(enemyUnit, 1, 1);
+    board.placeGamePieceOntoPosition(enemyUnit, 1, 1);
 
     var currentSelectedUnit = null;
     game.input.onTap.add(() => {
@@ -85,13 +87,6 @@ function createMarker(phaserGame) {
     marker.visible = false;
 
     return marker;
-}
-
-function createUnit(phaserGame, assetTag) {
-    var unit = phaserGame.add.sprite(100, 50, assetTag);
-    unit.anchor.setTo(0.5);
-
-    return unit;
 }
 
 function tryToSelectOrMoveAUnit(currentSelectedUnit) {

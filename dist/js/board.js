@@ -49,17 +49,21 @@ Board = function (game, gridSizeX, gridSizeY) {
 
     this.tryToMoveGamePiece = function (unitSprite, worldX, worldY) {
         var boardPosition = this.findBoardPosition(worldX, worldY);
-        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns)) {
+        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns))
+            this.placeGamePieceOntoPosition(unitSprite, boardPosition.x, boardPosition.y);
+    };
 
-            var boardCoordinates = translateBoardPostionToBoardCoordinates(
-                boardPosition.x, boardPosition.y, this.hexagonWidth, this.hexagonHeight);
-            var positionIsOccupied = positionIsOccupiedByGamePiece(
-                this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y)
-            if (!positionIsOccupied) {
-                console.log('the position isnt occupied');
-                this.updateSpriteToBoardPosition(unitSprite, worldX, worldY);
-            }
-            else console.log('the position is occupied!!!');
+    this.placeGamePieceOntoPosition = function(unitSprite, boardPositionX, boardPositionY) {
+        var boardCoordinates = translateBoardPostionToBoardCoordinates(
+            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight);
+        var currentOccupant = getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
+        if (!currentOccupant) {
+            console.log('the position isnt occupied');
+            unitSprite.move(boardCoordinates.x, boardCoordinates.y);
+        }
+        else if (currentOccupant) {
+            console.log('the position is occupied!!!');
+            handleGamePieceCollision(this.gamePiecesGroup, unitSprite, currentOccupant);
         }
     };
 
@@ -180,8 +184,16 @@ function createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPosition,
     return hexagon;
 }
 
-function positionIsOccupiedByGamePiece(gamePiecesGroup, boardCoordinateX, boardCoordinateY) {
-    return getGamePiece(gamePiecesGroup,boardCoordinateX, boardCoordinateY) !== null;
+function handleGamePieceCollision(gamePiecesGroup, attacker, defender) {
+    if (attacker === defender) return;
+
+    defender.updateHealth();
+    if (defender.isDead()) {
+        setTimeout(() => {
+            gamePiecesGroup.remove(defender);
+            defender.cleanUp();
+        }, 250);
+    }
 }
 
 function getGamePiece(gamePiecesGroup, boardCoordinateX, boardCoordinateY) {
