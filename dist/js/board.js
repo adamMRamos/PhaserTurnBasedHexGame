@@ -40,22 +40,46 @@ Board = function (game, gridSizeX, gridSizeY) {
         console.log('input x: '+worldX);
         console.log('input y: '+worldY);
 
-        var candidatePosition = this.findBoardPosition(worldX, worldY);
+        var candidatePosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+
         var boardCoordinates = translateBoardPostionToBoardCoordinates(
             candidatePosition.x, candidatePosition.y, this.hexagonWidth, this.hexagonHeight);
+
+        var boardPos = translateBoardCoordinatesToBoardPosition(
+            boardCoordinates.x, boardCoordinates.y, this.hexagonWidth, this.hexagonHeight);
+
+        console.log('Board pos: '+candidatePosition.x+', '+candidatePosition.y);
+        console.log('Board pos translated: '+boardPos.x+', '+boardPos.y);
 
         return getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
     };
 
     this.tryToMoveGamePiece = function (unitSprite, worldX, worldY) {
-        var boardPosition = this.findBoardPosition(worldX, worldY);
-        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns))
+        var boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns) ||
+            boardPositionIsTooFar(boardPosition, unitSprite))
             this.placeGamePieceOntoPosition(unitSprite, boardPosition.x, boardPosition.y);
     };
 
     this.placeGamePieceOntoPosition = function(unitSprite, boardPositionX, boardPositionY) {
+        var boardPosition = {x:boardPositionX, y:boardPositionY};
+        var unitPosition = translateBoardCoordinatesToBoardPosition(
+            unitSprite.x, unitSprite.y, this.hexagonWidth, this.hexagonHeight
+        );
+        console.log('current position: '+unitPosition.x+', '+unitPosition.y);
+        console.log('destination: '+boardPositionX+', '+boardPositionY);
+        var deltaX = boardPositionX - unitPosition.x;
+        var deltaY = boardPositionY - unitPosition.y;
+        var maxX = Math.max(boardPositionX, unitPosition.x);
+        var distance = deltaX+deltaY-(Math.ceil(deltaX+(unitPosition.x%2)));
+
+        console.log('The distance being traveled: '+distance);
+        console.log(Math.pow(2,3));
+
         var boardCoordinates = translateBoardPostionToBoardCoordinates(
-            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight);
+            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight
+        );
+
         var currentOccupant = getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
         if (!currentOccupant) {
             console.log('the position isnt occupied');
@@ -68,11 +92,11 @@ Board = function (game, gridSizeX, gridSizeY) {
     };
 
     this.updateSpriteToBoardPosition = function(sprite, worldX, worldY) {
-        var boardPosition = this.findBoardPosition(worldX, worldY);
+        var boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
         this.placeSpriteOnBoard(sprite, boardPosition.x, boardPosition.y);
     };
 
-    this.findBoardPosition = function(worldX, worldY) {
+    this.translateWorldCoordinatesToBoardPosition = function(worldX, worldY) {
         var boardXPosition = this.getBoardXPosition();
         var boardYPosition = this.getBoardYPosition();
         var candidateX = Math.floor((worldX - boardXPosition)/this.sectorWidth);
@@ -119,6 +143,8 @@ Board = function (game, gridSizeX, gridSizeY) {
 
 function translateBoardPostionToBoardCoordinates(boardPositionX, boardPositionY, hexagonWidth, hexagonHeight) {
     var boardCoordinateX = hexagonWidth*(3/4)*boardPositionX + hexagonWidth/2;
+    // coordX-(hexWidth/2) = hexWidth*(3/4)*boardPosX
+    // (coordX-(hexWidth/2))/(hexWidth*(3/4)) = boardPosX
     var boardCoordinateY = hexagonHeight*boardPositionY;
 
     if (boardPositionX%2 === 0) boardCoordinateY += hexagonHeight/2;
@@ -129,6 +155,21 @@ function translateBoardPostionToBoardCoordinates(boardPositionX, boardPositionY,
 
 function outOfBounds(posX, posY, xTiles, columns) {
     return posX < 0 || posY < 0 || posX >= xTiles || posY > columns[posX%2] - 1;
+}
+
+function translateBoardCoordinatesToBoardPosition(boardCoordinateX, boardCoordinateY, hexWidth, hexHeight) {
+    var boardPositionX = (boardCoordinateX - (hexWidth/2)) / (hexWidth*(3/4));
+    var boardPositionY = Math.ceil((boardCoordinateY/hexHeight)-1);
+
+    return {x:boardPositionX, y:boardPositionY};
+}
+
+function boardPositionIsTooFar(boardPosition, unitSprite) {
+    var unitCoordinateX = unitSprite.x;
+    var unitCoordinateY = unitSprite.y;
+
+
+    return false;
 }
 
 function createHexagonGroup(phaserGame, gridSizeX, gridSizeY, hexagonWidth, hexagonHeight) {

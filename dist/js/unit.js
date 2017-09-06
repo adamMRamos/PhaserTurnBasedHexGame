@@ -16,12 +16,8 @@ Unit = function(game, x, y, unitImageTag) {
         height: 10,
         x: x,
         y: y,
-        bg: {
-            color: '#651828'
-        },
-        bar: {
-            color: '#FEFF03'
-        },
+        bg: {color: '#651828'},
+        bar: {color: '#FEFF03'},
         animationDuration: 200,
         flipped: false
     };
