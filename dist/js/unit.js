@@ -9,9 +9,10 @@ Unit = function(game, x, y, unitImageTag) {
 
     this.maxHealth = 2;
     this.health = 2;
-    this.actions = 1;
+    this.maxActions = 5;
+    this.actions = 5;
 
-    var barConfig = {
+        var barConfig = {
         width: 32,
         height: 10,
         x: x,

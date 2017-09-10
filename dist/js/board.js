@@ -56,23 +56,29 @@ Board = function (game, gridSizeX, gridSizeY) {
 
     this.tryToMoveGamePiece = function (unitSprite, worldX, worldY) {
         var boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
-        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns) ||
-            boardPositionIsTooFar(boardPosition, unitSprite))
-            this.placeGamePieceOntoPosition(unitSprite, boardPosition.x, boardPosition.y);
+        if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns)) {
+            var unitPosition = translateBoardCoordinatesToBoardPosition(
+                unitSprite.x, unitSprite.y, this.hexagonWidth, this.hexagonHeight
+            );
+
+            if (this.distanceBetweenTwoHexes(unitPosition, boardPosition) > unit.actions)
+                console.log('the position is too far away!!!');
+            else
+                this.placeGamePieceOntoPosition(unitSprite, boardPosition);
+        }
     };
 
-    this.placeGamePieceOntoPosition = function(unitSprite, boardPositionX, boardPositionY) {
-        var boardPosition = {x:boardPositionX, y:boardPositionY};
+    this.placeGamePieceOntoPosition = function(unitSprite, boardPosition) {
         var unitPosition = translateBoardCoordinatesToBoardPosition(
             unitSprite.x, unitSprite.y, this.hexagonWidth, this.hexagonHeight
         );
         console.log('current position: '+unitPosition.x+', '+unitPosition.y);
-        console.log('destination: '+boardPositionX+', '+boardPositionY);
+        console.log('destination: '+boardPosition.x+', '+boardPosition.y);
         var actualDistance = this.distanceBetweenTwoHexes(unitPosition, boardPosition);
         console.log('Actual Distance = '+actualDistance);
 
         var boardCoordinates = translateBoardPostionToBoardCoordinates(
-            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight
+            boardPosition.x, boardPosition.y, this.hexagonWidth, this.hexagonHeight
         );
 
         var currentOccupant = getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
