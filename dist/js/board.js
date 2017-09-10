@@ -68,13 +68,8 @@ Board = function (game, gridSizeX, gridSizeY) {
         );
         console.log('current position: '+unitPosition.x+', '+unitPosition.y);
         console.log('destination: '+boardPositionX+', '+boardPositionY);
-        var deltaX = boardPositionX - unitPosition.x;
-        var deltaY = boardPositionY - unitPosition.y;
-        var maxX = Math.max(boardPositionX, unitPosition.x);
-        var distance = deltaX+deltaY-(Math.ceil(deltaX+(unitPosition.x%2)));
-
-        console.log('The distance being traveled: '+distance);
-        console.log(Math.pow(2,3));
+        var actualDistance = this.distanceBetweenTwoHexes(unitPosition, boardPosition);
+        console.log('Actual Distance = '+actualDistance);
 
         var boardCoordinates = translateBoardPostionToBoardCoordinates(
             boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight
@@ -89,6 +84,26 @@ Board = function (game, gridSizeX, gridSizeY) {
             console.log('the position is occupied!!!');
             handleGamePieceCollision(this.gamePiecesGroup, unitSprite, currentOccupant);
         }
+    };
+
+    this.distanceBetweenTwoHexes = function(origin, destination) {
+        var x1 = origin.x;
+        var x2 = destination.x;
+        var transfromY = (x,y) => {
+            return y+Math.floor((x-1)/2);
+        };
+        var y1 = transfromY(x1, origin.y);
+        var y2 = transfromY(x2, destination.y);
+
+        var deltaX = x2 - x1;
+        var deltaY = y2 - y1;
+        var possibleDistance1 = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+        var possibleDistance2 = Math.abs(deltaX) + Math.abs(deltaY);
+
+        var valuesHaveTheSameSign = (val1, val2) => {
+            return (val1 >= 0 && val2 >=0) || (val1 < 0 && val2 < 0);
+        };
+        return valuesHaveTheSameSign(deltaX, deltaY) ? possibleDistance1 : possibleDistance2;
     };
 
     this.updateSpriteToBoardPosition = function(sprite, worldX, worldY) {
@@ -143,8 +158,6 @@ Board = function (game, gridSizeX, gridSizeY) {
 
 function translateBoardPostionToBoardCoordinates(boardPositionX, boardPositionY, hexagonWidth, hexagonHeight) {
     var boardCoordinateX = hexagonWidth*(3/4)*boardPositionX + hexagonWidth/2;
-    // coordX-(hexWidth/2) = hexWidth*(3/4)*boardPosX
-    // (coordX-(hexWidth/2))/(hexWidth*(3/4)) = boardPosX
     var boardCoordinateY = hexagonHeight*boardPositionY;
 
     if (boardPositionX%2 === 0) boardCoordinateY += hexagonHeight/2;
