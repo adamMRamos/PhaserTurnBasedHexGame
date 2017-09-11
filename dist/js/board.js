@@ -35,6 +35,12 @@ Board = function (game, gridSizeX, gridSizeY) {
         return this.hexagonGroup.y;
     };
 
+    this.refreshGamePieces = function() {
+        this.gamePiecesGroup.forEach((piece) => {
+            piece.refreshActions();
+        });
+    };
+
     this.selectGamePiece = function(worldX, worldY) {
         console.log('try to select UNIT');
         console.log('input x: '+worldX);

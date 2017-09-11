@@ -39,6 +39,10 @@ Unit.prototype.move = function(x, y) {
     this.healthBar.setPosition(this.x+140, this.y-30);
 };
 
+Unit.prototype.refreshActions = function() {
+    this.actions = this.maxActions;
+};
+
 Unit.prototype.updateActions = function(actionPointsUsed) {
     this.actions -= actionPointsUsed;
 };
