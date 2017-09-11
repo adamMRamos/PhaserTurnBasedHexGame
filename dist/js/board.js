@@ -40,12 +40,12 @@ Board = function (game, gridSizeX, gridSizeY) {
         console.log('input x: '+worldX);
         console.log('input y: '+worldY);
 
-        var candidatePosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+        const candidatePosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
 
-        var boardCoordinates = translateBoardPostionToBoardCoordinates(
+        const boardCoordinates = translateBoardPostionToBoardCoordinates(
             candidatePosition.x, candidatePosition.y, this.hexagonWidth, this.hexagonHeight);
 
-        var boardPos = translateBoardCoordinatesToBoardPosition(
+        const boardPos = translateBoardCoordinatesToBoardPosition(
             boardCoordinates.x, boardCoordinates.y, this.hexagonWidth, this.hexagonHeight);
 
         console.log('Board pos: '+candidatePosition.x+', '+candidatePosition.y);
@@ -55,76 +55,79 @@ Board = function (game, gridSizeX, gridSizeY) {
     };
 
     this.tryToMoveGamePiece = function (unitSprite, worldX, worldY) {
-        var boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+        const boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+
         if (!outOfBounds(boardPosition.x, boardPosition.y, this.xTiles, this.columns)) {
-            var unitPosition = translateBoardCoordinatesToBoardPosition(
+            const unitPosition = translateBoardCoordinatesToBoardPosition(
                 unitSprite.x, unitSprite.y, this.hexagonWidth, this.hexagonHeight
             );
 
-            if (this.distanceBetweenTwoHexes(unitPosition, boardPosition) > unit.actions)
+            console.log('current position: '+unitPosition.x+', '+unitPosition.y);
+            console.log('destination: '+boardPosition.x+', '+boardPosition.y);
+            const actionDistance = this.distanceBetweenTwoHexes(unitPosition, boardPosition);
+            console.log('action Distance = '+actionDistance);
+
+            if (actionDistance > unitSprite.actions)
                 console.log('the position is too far away!!!');
-            else
-                this.placeGamePieceOntoPosition(unitSprite, boardPosition);
+            else {
+                const boardCoordinates = translateBoardPostionToBoardCoordinates(
+                    boardPosition.x, boardPosition.y, this.hexagonWidth, this.hexagonHeight
+                );
+                const currentOccupant = getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
+                if (!currentOccupant) {
+                    console.log('the position isnt occupied');
+                    this.placeGamePieceOntoTile(unitSprite, boardPosition);
+                    unitSprite.updateActions(actionDistance);
+                }
+                else {
+                    console.log('the position is occupied!!! unit will try to attack');
+                    handleGamePieceCollision(this.gamePiecesGroup, unitSprite, currentOccupant, actionDistance);
+                }
+            }
         }
     };
 
-    this.placeGamePieceOntoPosition = function(unitSprite, boardPosition) {
-        var unitPosition = translateBoardCoordinatesToBoardPosition(
-            unitSprite.x, unitSprite.y, this.hexagonWidth, this.hexagonHeight
-        );
-        console.log('current position: '+unitPosition.x+', '+unitPosition.y);
-        console.log('destination: '+boardPosition.x+', '+boardPosition.y);
-        var actualDistance = this.distanceBetweenTwoHexes(unitPosition, boardPosition);
-        console.log('Actual Distance = '+actualDistance);
-
-        var boardCoordinates = translateBoardPostionToBoardCoordinates(
-            boardPosition.x, boardPosition.y, this.hexagonWidth, this.hexagonHeight
+    this.placeGamePieceOntoTile = function(unitSprite, tilePosition) {
+        const boardCoordinates = translateBoardPostionToBoardCoordinates(
+            tilePosition.x, tilePosition.y, this.hexagonWidth, this.hexagonHeight
         );
 
-        var currentOccupant = getGamePiece(this.gamePiecesGroup, boardCoordinates.x, boardCoordinates.y);
-        if (!currentOccupant) {
-            console.log('the position isnt occupied');
-            unitSprite.move(boardCoordinates.x, boardCoordinates.y);
-        }
-        else if (currentOccupant) {
-            console.log('the position is occupied!!!');
-            handleGamePieceCollision(this.gamePiecesGroup, unitSprite, currentOccupant);
-        }
+        unitSprite.move(boardCoordinates.x, boardCoordinates.y);
     };
 
     this.distanceBetweenTwoHexes = function(origin, destination) {
-        var x1 = origin.x;
-        var x2 = destination.x;
-        var transfromY = (x,y) => {
+        const x1 = origin.x;
+        const x2 = destination.x;
+        const transfromY = (x,y) => {
             return y+Math.floor((x-1)/2);
         };
-        var y1 = transfromY(x1, origin.y);
-        var y2 = transfromY(x2, destination.y);
+        const y1 = transfromY(x1, origin.y);
+        const y2 = transfromY(x2, destination.y);
 
-        var deltaX = x2 - x1;
-        var deltaY = y2 - y1;
-        var possibleDistance1 = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-        var possibleDistance2 = Math.abs(deltaX) + Math.abs(deltaY);
+        const deltaX = x2 - x1;
+        const deltaY = y2 - y1;
+        const possibleDistance1 = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+        const possibleDistance2 = Math.abs(deltaX) + Math.abs(deltaY);
 
-        var valuesHaveTheSameSign = (val1, val2) => {
+        const valuesHaveTheSameSign = (val1, val2) => {
             return (val1 >= 0 && val2 >=0) || (val1 < 0 && val2 < 0);
         };
         return valuesHaveTheSameSign(deltaX, deltaY) ? possibleDistance1 : possibleDistance2;
     };
 
     this.updateSpriteToBoardPosition = function(sprite, worldX, worldY) {
-        var boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
+        const boardPosition = this.translateWorldCoordinatesToBoardPosition(worldX, worldY);
         this.placeSpriteOnBoard(sprite, boardPosition.x, boardPosition.y);
     };
 
     this.translateWorldCoordinatesToBoardPosition = function(worldX, worldY) {
-        var boardXPosition = this.getBoardXPosition();
-        var boardYPosition = this.getBoardYPosition();
-        var candidateX = Math.floor((worldX - boardXPosition)/this.sectorWidth);
-        var candidateY = Math.floor((worldY - boardYPosition)/this.sectorHeight);
+        const boardXPosition = this.getBoardXPosition();
+        const boardYPosition = this.getBoardYPosition();
+        let candidateX = Math.floor((worldX - boardXPosition)/this.sectorWidth);
+        let candidateY = Math.floor((worldY - boardYPosition)/this.sectorHeight);
 
-        var deltaX = (worldX - boardXPosition) % this.sectorWidth;
-        var deltaY = (worldY - boardYPosition) % this.sectorHeight;
+        const deltaX = (worldX - boardXPosition) % this.sectorWidth;
+        const deltaY = (worldY - boardYPosition) % this.sectorHeight;
 
         if (candidateX%2 === 0) {
             if (deltaX < ((this.hexagonWidth/4) - deltaY*this.gradient)) {
@@ -147,8 +150,9 @@ Board = function (game, gridSizeX, gridSizeY) {
 
     this.placeSpriteOnBoard = function(sprite, boardPositionX, boardPositionY, verbose) {
         if (verbose) console.log('try to place UNIT on ('+boardPositionX+', '+boardPositionY+')');
-        var boardCoordinates = translateBoardPostionToBoardCoordinates(
-            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight);
+        const boardCoordinates = translateBoardPostionToBoardCoordinates(
+            boardPositionX, boardPositionY, this.hexagonWidth, this.hexagonHeight
+        );
 
         if (outOfBounds(boardPositionX, boardPositionY, this.xTiles, this.columns)) {
             if (verbose) console.log('The UNIT is out of bounds, hide the unit');
@@ -163,8 +167,8 @@ Board = function (game, gridSizeX, gridSizeY) {
 };
 
 function translateBoardPostionToBoardCoordinates(boardPositionX, boardPositionY, hexagonWidth, hexagonHeight) {
-    var boardCoordinateX = hexagonWidth*(3/4)*boardPositionX + hexagonWidth/2;
-    var boardCoordinateY = hexagonHeight*boardPositionY;
+    let boardCoordinateX = hexagonWidth*(3/4)*boardPositionX + hexagonWidth/2;
+    let boardCoordinateY = hexagonHeight*boardPositionY;
 
     if (boardPositionX%2 === 0) boardCoordinateY += hexagonHeight/2;
     else boardCoordinateY += hexagonHeight;
@@ -177,29 +181,21 @@ function outOfBounds(posX, posY, xTiles, columns) {
 }
 
 function translateBoardCoordinatesToBoardPosition(boardCoordinateX, boardCoordinateY, hexWidth, hexHeight) {
-    var boardPositionX = (boardCoordinateX - (hexWidth/2)) / (hexWidth*(3/4));
-    var boardPositionY = Math.ceil((boardCoordinateY/hexHeight)-1);
+    const boardPositionX = (boardCoordinateX - (hexWidth/2)) / (hexWidth*(3/4));
+    const boardPositionY = Math.ceil((boardCoordinateY/hexHeight)-1);
 
     return {x:boardPositionX, y:boardPositionY};
 }
 
-function boardPositionIsTooFar(boardPosition, unitSprite) {
-    var unitCoordinateX = unitSprite.x;
-    var unitCoordinateY = unitSprite.y;
-
-
-    return false;
-}
-
 function createHexagonGroup(phaserGame, gridSizeX, gridSizeY, hexagonWidth, hexagonHeight) {
-    var hexagonGridGroup = phaserGame.add.group();
+    const hexagonGridGroup = phaserGame.add.group();
 
-    for (var rowPos = 0; rowPos < gridSizeX/2; rowPos++) {
+    for (let rowPos = 0; rowPos < gridSizeX/2; rowPos++) {
 
-        for (var colPos = 0; colPos < gridSizeY; colPos++) {
+        for (let colPos = 0; colPos < gridSizeY; colPos++) {
 
             if (canPlaceHexagonTile(gridSizeX, rowPos, colPos)) {
-                var hexagon = createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPos, colPos);
+                const hexagon = createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPos, colPos);
                 hexagonGridGroup.add(hexagon);
             }
         }
@@ -237,27 +233,34 @@ function canPlaceHexagonTile(maximumTilesOnXAxis, rowPosition, colPosition) {
 }
 
 function createHexagonTile(phaserGame, hexagonWidth, hexagonHeight, rowPosition, colPosition) {
-    var hexagonX = (hexagonWidth * rowPosition * 1.5) + (hexagonWidth/4*3) * (colPosition%2);
-    var hexagonY = hexagonHeight * colPosition/2;
-    var hexagon = phaserGame.add.sprite(hexagonX, hexagonY, 'hexagon');
+    const hexagonX = (hexagonWidth * rowPosition * 1.5) + (hexagonWidth/4*3) * (colPosition%2);
+    const hexagonY = hexagonHeight * colPosition/2;
 
-    return hexagon;
+    return phaserGame.add.sprite(hexagonX, hexagonY, 'hexagon');
 }
 
-function handleGamePieceCollision(gamePiecesGroup, attacker, defender) {
-    if (attacker === defender) return;
+function handleGamePieceCollision(gamePiecesGroup, attacker, defender, distance) {
+    if (attacker === defender || attacker.range < distance) return;
 
-    defender.updateHealth();
-    if (defender.isDead()) {
-        setTimeout(() => {
-            gamePiecesGroup.remove(defender);
-            defender.cleanUp();
-        }, 250);
-    }
+    attacker.useAttack();
+    if (Math.random() <= attacker.attack)
+        defender.updateHealth();
+    if (defender.range >= distance && Math.random() <= defender.defense)
+        attacker.updateHealth();
+
+    if (defender.isDead()) removeUnit(gamePiecesGroup, defender);
+    if (attacker.isDead()) removeUnit(gamePiecesGroup, attacker);
+}
+
+function removeUnit(gamePiecesGroup, unit) {
+    setTimeout(() => {
+        gamePiecesGroup.remove(unit);
+        unit.cleanUp();
+    }, 250);
 }
 
 function getGamePiece(gamePiecesGroup, boardCoordinateX, boardCoordinateY) {
-    var gamePiece = null;
+    let gamePiece = null;
     gamePiecesGroup.forEach((piece) => {
         if (piece.x === boardCoordinateX && piece.y === boardCoordinateY) return gamePiece = piece;
     });

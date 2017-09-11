@@ -11,10 +11,13 @@ Unit = function(game, x, y, unitImageTag) {
     this.health = 2;
     this.maxActions = 5;
     this.actions = 5;
+    this.range = 1;
+    this.attack = 0.3;
+    this.defense = 0.5;
 
-        var barConfig = {
-        width: 32,
-        height: 10,
+    var barConfig = {
+        width: 5*this.maxHealth,
+        height: 8,
         x: x,
         y: y,
         bg: {color: '#651828'},
@@ -23,6 +26,7 @@ Unit = function(game, x, y, unitImageTag) {
         flipped: false
     };
     this.healthBar = new HealthBar(game, barConfig);
+    updateHealthBar(this);
 };
 
 Unit.prototype = Object.create(Phaser.Sprite.prototype);
@@ -33,6 +37,14 @@ Unit.prototype.move = function(x, y) {
     this.x = x;
     this.y = y;
     this.healthBar.setPosition(this.x+140, this.y-30);
+};
+
+Unit.prototype.updateActions = function(actionPointsUsed) {
+    this.actions -= actionPointsUsed;
+};
+
+Unit.prototype.useAttack = function() {
+    this.actions = 0;
 };
 
 Unit.prototype.updateHealth = function() {

@@ -63,12 +63,12 @@ function create() {
     //unit = createUnit(game, validAssetNames.cube.tag);
     unit = new Unit(game, 100, 50, validAssetNames.cube.tag);
     board.addSpriteToBoard(unit);
-    board.placeGamePieceOntoPosition(unit, {x:0, y:0});
+    board.placeGamePieceOntoTile(unit, {x:0, y:0});
 
     //var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
     var enemyUnit = new Unit(game, 100, 50, validAssetNames.redCube.tag);
     board.addSpriteToBoard(enemyUnit);
-    board.placeGamePieceOntoPosition(enemyUnit, {x:1, y:1});
+    board.placeGamePieceOntoTile(enemyUnit, {x:1, y:1});
 
     var currentSelectedUnit = null;
     game.input.onTap.add(() => {
