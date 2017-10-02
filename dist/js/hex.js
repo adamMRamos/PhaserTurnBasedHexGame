@@ -5,6 +5,7 @@ Hex = function(x, y, z) {
     let depth = z;
 
     if (!depth) depth = (-x-y);
+    if (depth === -0) depth = 0;
 
     this.x = () => { return column; };
     this.y = () => { return row; };
@@ -19,7 +20,6 @@ Hex.prototype.getInfo = function() {
 
 Hex.prototype.equals = function(hex) {
     if (!isAHex(hex)) return false;
-
     return this.x() === hex.x() && this.y() === hex.y() && this.z() === hex.z();
 };
 
