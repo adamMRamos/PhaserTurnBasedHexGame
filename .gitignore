@@ -4,4 +4,6 @@ config/
 scripts/
 dist/assets/
 dist/examples/
+jasmine/MIT.LICENSE
+jasmine/lib/
 debug.log

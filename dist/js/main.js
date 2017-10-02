@@ -1,33 +1,29 @@
 /**
  * Created by amram on 7/26/2017.
  */
-var game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: preload, create: create, update: update, render:render });
-var cursors;
-var size = new Phaser.Rectangle();
+let game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: preload, create: create, update: update, render:render });
+let cursors;
+let size = new Phaser.Rectangle();
 
-var hexagonWidth = 80;
-var hexagonHeight = 70;
-var sectorWidth = hexagonWidth*3/4;
-var sectorHeight = hexagonHeight;
-var gradient = (hexagonWidth/4)/(hexagonHeight/2);
-
-var gridSizeX = 20;
-var gridSizeY = 20;
-var columns = [Math.ceil(gridSizeY/2),Math.floor(gridSizeY/2)];
+let gridSizeX = 20;
+let gridSizeY = 20;
+let xHexes = gridSizeX;
+let yHexes = Math.ceil(gridSizeY/2);
+let columns = [Math.ceil(gridSizeY/2),Math.floor(gridSizeY/2)];
 
 console.log('columns: '+JSON.stringify(columns));
 
-var moveIndex;
-var marker;
-var unit;
-var circle;
-var triangle;
-var hexagonGroup;
+let moveIndex;
+let marker;
+let unit;
+let circle;
+let triangle;
+let hexagonGroup;
 
-var zooming = false;
-var zoomAmount = 0.005;
+let zooming = false;
+let zoomAmount = 0.005;
 
-var validAssetNames         =   {};
+let validAssetNames         =   {};
 validAssetNames.background  =   {tag:'background', path:'phaser'};
 validAssetNames.hexagon     =   {tag:'hexagon', path:'dirt2'};
 validAssetNames.marker      =   {tag:'marker', path:'marker'};
@@ -66,11 +62,11 @@ function create() {
     board.placeGamePieceOntoTile(unit, {x:0, y:0});
 
     //var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
-    var enemyUnit = new Unit(game, 100, 50, validAssetNames.redCube.tag);
+    let enemyUnit = new Unit(game, 100, 50, validAssetNames.redCube.tag);
     board.addSpriteToBoard(enemyUnit);
     board.placeGamePieceOntoTile(enemyUnit, {x:1, y:1});
 
-    var currentSelectedUnit = null;
+    let currentSelectedUnit = null;
     game.input.onTap.add(() => {
         currentSelectedUnit = tryToSelectOrMoveAUnit(currentSelectedUnit);
     });
@@ -82,7 +78,7 @@ function create() {
 }
 
 function createMarker(phaserGame) {
-    var marker = phaserGame.add.sprite(0,0,validAssetNames.hexMarker.tag);
+    const marker = phaserGame.add.sprite(0,0,validAssetNames.hexMarker.tag);
     marker.anchor.setTo(0.5);
     marker.visible = false;
 
@@ -90,8 +86,8 @@ function createMarker(phaserGame) {
 }
 
 function tryToSelectOrMoveAUnit(currentSelectedUnit) {
-    var worldX = game.input.worldX;
-    var worldY = game.input.worldY;
+    const worldX = game.input.worldX;
+    const worldY = game.input.worldY;
     console.log('TAP');
     if (!currentSelectedUnit) {
         console.log('current piece is null, try to select one from the game');
@@ -109,12 +105,20 @@ function updateMarkerToNewHexPosition() {
 }
 
 function update() {
+    refreshBoard();
     tryToZoom();
 
     if (cursors.up.isDown) game.camera.y -= 8;
     else if (cursors.down.isDown) game.camera.y += 8;
     if (cursors.left.isDown) game.camera.x -= 8;
     else if (cursors.right.isDown) game.camera.x += 8;
+}
+
+function refreshBoard() {
+    if (game.input.keyboard.isDown(Phaser.KeyCode.ENTER)) {
+        console.log('PRESSING ENTER');
+        board.refreshGamePieces();
+    }
 }
 
 function tryToZoom() {
@@ -159,7 +163,7 @@ function transpose(array) {
 
 
 //horizontal tile shaped level
-var levelData =
+let levelData =
     [
         [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
         [-1,-1, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1],
