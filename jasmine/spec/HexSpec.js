@@ -81,7 +81,63 @@ describe('Hex', () => {
             hexes.forEach((hex) => findingHexNeighborWorksAsExpected(hex, hexDirectionsMap));
         });
     });
+    // noinspection JSUnresolvedFunction
+    describe('All functions return undefined on invalid input', () => {
+        // noinspection JSUnresolvedFunction
+        it('Adding hexes returns undefined', () => {
+            testForUndefinedResult(hex0, Hex.addHexes);
+        });
+        // noinspection JSUnresolvedFunction
+        it('Subtracting hexes returns undefined', () => {
+            testForUndefinedResult(hex0, Hex.subtractHexes);
+        });
+        // noinspection JSUnresolvedFunction
+        it('Multiplying hexes returns undefined', () => {
+            testForUndefinedResult(hex0, Hex.multiplyHexes);
+        });
+        // noinspection JSUnresolvedFunction
+        it('Finding hex length returns undefined', () => {
+            let undefinedInput;
+            expect(Hex.hexLength(undefinedInput)).not.toBeDefined();
+            expect(Hex.hexLength(null)).not.toBeDefined();
+            expect(Hex.hexLength('hex')).not.toBeDefined();
+            expect(Hex.hexLength(0)).not.toBeDefined();
+            expect(Hex.hexLength(true)).not.toBeDefined();
+        });
+        // noinspection JSUnresolvedFunction
+        it('Finding hex distance returns undefined', () => {
+            testForUndefinedResult(hex0, Hex.hexDistance);
+        });
+        // noinspection JSUnresolvedFunction
+        it('Finding hex direction returns undefined', () => {
+            let undefinedInput;
+            expect(Hex.getHexDirection(undefinedInput)).not.toBeDefined();
+            expect(Hex.getHexDirection(null)).not.toBeDefined();
+            expect(Hex.getHexDirection('hex')).not.toBeDefined();
+            expect(Hex.getHexDirection(6)).not.toBeDefined();
+            expect(Hex.getHexDirection(-1)).not.toBeDefined();
+            expect(Hex.hexLength(true)).not.toBeDefined();
+        });
+        // noinspection JSUnresolvedFunction
+        it('Finding hex neighbor returns undefined', () => {
+            testForUndefinedResult(hex0, Hex.hexNeighbor);
+            expect(Hex.hexNeighbor(hex0, 'hex')).not.toBeDefined();
+            expect(Hex.hexNeighbor(hex0, 6)).not.toBeDefined();
+            expect(Hex.hexNeighbor(hex0, -1)).not.toBeDefined();
+            expect(Hex.hexNeighbor(hex0, true)).not.toBeDefined();
+        });
+    });
 });
+
+function testForUndefinedResult(validInput, func) {
+    let undefinedInput1, undefinedInput2;
+    expect(func(validInput, undefinedInput2)).not.toBeDefined();
+    expect(func(undefinedInput1, validInput)).not.toBeDefined();
+    expect(func(undefinedInput1, undefinedInput2)).not.toBeDefined();
+    expect(func(validInput, null)).not.toBeDefined();
+    expect(func(null, validInput)).not.toBeDefined();
+    expect(func(null, null)).not.toBeDefined();
+}
 
 function checkGetInfoResults(hex, expectedStringResult) {
     expect(hex.getInfo()).toEqual(expectedStringResult);
