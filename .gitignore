@@ -5,6 +5,7 @@ scripts/
 dist/assets/
 dist/examples/
 dist/FirstPhaserGame.min.js
+dist/FirstPhaserGame.js
 jasmine/MIT.LICENSE
 jasmine/lib/
 debug.log
