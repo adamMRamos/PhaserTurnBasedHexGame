@@ -144,7 +144,7 @@ function checkGetInfoResults(hex, expectedStringResult) {
 }
 
 function checkHexEqualsSameHex(hex) {
-    expect(hex.equals(new Hex(hex.x(), hex.y(), hex.z()))).toEqual(true);
+    expect(hex.equals(new Hex(hex.x, hex.y, hex.z))).toEqual(true);
 }
 
 function performFunctionOnAllHexesAndHexCoordinates(hexes, hexCoords, aFunc) {
@@ -174,9 +174,9 @@ function checkSubtractingHexIsAsExpected(hex, x, y, z) {
 function checkMultiplyingHexIsAsExpected(hex, multiple) {
     let newHex = Hex.multiplyHexes(hex, multiple);
 
-    const x = hex.x()*multiple === -0 ? 0 : hex.x()*multiple;
-    const y = hex.y()*multiple === -0 ? 0 : hex.y()*multiple;
-    const z = hex.z()*multiple === -0 ? 0 : hex.z()*multiple;
+    const x = hex.x*multiple === -0 ? 0 : hex.x*multiple;
+    const y = hex.y*multiple === -0 ? 0 : hex.y*multiple;
+    const z = hex.z*multiple === -0 ? 0 : hex.z*multiple;
 
     expect(newHex).toMatchHexFields([x,y,z]);
 }
@@ -230,13 +230,13 @@ function findingHexNeighborWorksAsExpected(hex, hexDirections) {
 }
 
 function addHexes(a, b) {
-    return new Hex(a.x()+b.x(), a.y()+b.y(), a.z()+b.z());
+    return new Hex(a.x+b.x, a.y+b.y, a.z+b.z);
 }
 
 function subtractHexes(a, b) {
-    return new Hex(a.x()-b.x(), a.y()-b.y(), a.z()-b.z());
+    return new Hex(a.x-b.x, a.y-b.y, a.z-b.z);
 }
 
 function findHexLength(hex) {
-    return parseInt((Math.abs(hex.x()) + Math.abs(hex.y()) + Math.abs(hex.z()))/2);
+    return parseInt((Math.abs(hex.x) + Math.abs(hex.y) + Math.abs(hex.z))/2);
 }

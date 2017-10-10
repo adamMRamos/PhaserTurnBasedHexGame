@@ -10,44 +10,45 @@ Hex = function(x, y, z) {
     if (row === -0) row = 0;
     if (depth === -0) depth = 0;
 
-    this.x = () => { return column; };
-    this.y = () => { return row; };
-    this.z = () => { return depth; };
+    Object.defineProperty(this, 'x', { writable: false, value: column });
+    Object.defineProperty(this, 'y', { writable: false, value: row });
+    Object.defineProperty(this, 'z', { writable: false, value: depth });
 };
 
 Hex.prototype.constructor = Hex;
 
 Hex.prototype.getInfo = function() {
-    return 'x: '+this.x()+', y: '+this.y()+', z: '+this.z();
+    return 'x: '+this.x+', y: '+this.y+', z: '+this.z;
 };
 
 Hex.prototype.equals = function(hex) {
     if (!isAHex(hex)) return false;
-    return this.x() === hex.x() && this.y() === hex.y() && this.z() === hex.z();
+
+    return this.x === hex.x && this.y === hex.y && this.z === hex.z;
 };
 
 Hex.addHexes = function(a, b) {
     if (!isAHex(a) || !isAHex(b)) return;
 
-    return new Hex(a.x()+b.x(), a.y()+b.y(), a.z()+b.z());
+    return new Hex(a.x+b.x, a.y+b.y, a.z+b.z);
 };
 
 Hex.subtractHexes = function (a, b) {
     if (!isAHex(a) || !isAHex(b)) return;
 
-    return new Hex(a.x()-b.x(), a.y()-b.y(), a.z()-b.z());
+    return new Hex(a.x-b.x, a.y-b.y, a.z-b.z);
 };
 
 Hex.multiplyHexes = function (hex, multiple) {
     if (!isAHex(hex) || !(typeof multiple === 'number')) return;
 
-    return new Hex(hex.x()*multiple, hex.y()*multiple, hex.z()*multiple);
+    return new Hex(hex.x*multiple, hex.y*multiple, hex.z*multiple);
 };
 
 Hex.hexLength = function(hex) {
     if (!isAHex(hex)) return;
 
-    return parseInt((Math.abs(hex.x()) + Math.abs(hex.y()) + Math.abs(hex.z()))/2);
+    return parseInt((Math.abs(hex.x) + Math.abs(hex.y) + Math.abs(hex.z))/2);
 };
 
 Hex.hexDistance = function(hex1, hex2) {
