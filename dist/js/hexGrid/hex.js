@@ -22,37 +22,37 @@ Hex.prototype.getInfo = function() {
 };
 
 Hex.prototype.equals = function(hex) {
-    if (!isAHex(hex)) return false;
+    if (!Hex.isAHex(hex)) return false;
 
     return this.x === hex.x && this.y === hex.y && this.z === hex.z;
 };
 
 Hex.addHexes = function(a, b) {
-    if (!isAHex(a) || !isAHex(b)) return;
+    if (!Hex.isAHex(a) || !Hex.isAHex(b)) return;
 
     return new Hex(a.x+b.x, a.y+b.y, a.z+b.z);
 };
 
 Hex.subtractHexes = function (a, b) {
-    if (!isAHex(a) || !isAHex(b)) return;
+    if (!Hex.isAHex(a) || !Hex.isAHex(b)) return;
 
     return new Hex(a.x-b.x, a.y-b.y, a.z-b.z);
 };
 
 Hex.multiplyHexes = function (hex, multiple) {
-    if (!isAHex(hex) || !(typeof multiple === 'number')) return;
+    if (!Hex.isAHex(hex) || !(typeof multiple === 'number')) return;
 
     return new Hex(hex.x*multiple, hex.y*multiple, hex.z*multiple);
 };
 
 Hex.hexLength = function(hex) {
-    if (!isAHex(hex)) return;
+    if (!Hex.isAHex(hex)) return;
 
     return parseInt((Math.abs(hex.x) + Math.abs(hex.y) + Math.abs(hex.z))/2);
 };
 
 Hex.hexDistance = function(hex1, hex2) {
-    if (!isAHex(hex1) || !isAHex(hex2)) return;
+    if (!Hex.isAHex(hex1) || !Hex.isAHex(hex2)) return;
 
     return Hex.hexLength(Hex.subtractHexes(hex1, hex2));
 };
@@ -76,11 +76,11 @@ Hex.getHexDirection = function(direction) {
 };
 
 Hex.hexNeighbor = function(hex, direction) {
-    if (!isAHex(hex)) return;
+    if (!Hex.isAHex(hex)) return;
 
     return Hex.addHexes(hex, Hex.getHexDirection(direction));
 };
 
-function isAHex(hex) {
+Hex.isAHex = function(hex) {
     return hex instanceof Hex;
-}
+};

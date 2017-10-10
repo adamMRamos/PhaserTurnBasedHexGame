@@ -4,7 +4,12 @@ Point = function(x, y) {
     this.y = y;
 };
 
-Point.prototype = Point;
+Point.prototype.constructor = Point;
+
+Point.isAPoint = function(point) {
+    return point instanceof Point;
+};
+
 Point.prototype.hexToPoint = function (layout, hex) {
     if (!(layout instanceof Layout) || !(hex instanceof Hex)) return;
 

@@ -9,6 +9,7 @@ let hex2 = new Hex(0,1);
 
 function preload() {
     assetLoader.loadAssets(game);
+
     console.log('hex1 = ' + hex1.getInfo());
     console.log('hex2 = ' + hex2.getInfo());
     console.log(hex1.equals(hex2));
@@ -47,6 +48,34 @@ function create() {
     game.add.sprite(0, 0, 'background');
 
     game.stage.backgroundColor = '#374d5c';
+
+    let size = new Point(40,40);
+    let origin = new Point(300,300);
+    let layout = new Layout(Layout.FLAT, size, origin);
+    let centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+
+    centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('north'));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+
+    centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('south'));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+
+    centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('northEast'));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+
+    centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('southEast'));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+
+    centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexMarker');
+
 }
 
 function update() { }

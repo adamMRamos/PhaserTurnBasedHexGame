@@ -12,9 +12,10 @@ validAssetNames.triangle    =   {tag:'triangle', path:'triangle'};
 
 AssetLoader = function() {
     this.loadAssets = function(game) {
-        Object.keys(validAssetNames).forEach((key) => {
-            console.log('key: '+JSON.stringify(key));
-            let asset = validAssetNames[key];
+        Object.keys(validAssetNames).forEach((assetName) => {
+            console.log('key: '+JSON.stringify(assetName));
+            let asset = validAssetNames[assetName];
+
             game.load.image(asset.tag, 'assets/'+asset.path+'.png');
         });
     };

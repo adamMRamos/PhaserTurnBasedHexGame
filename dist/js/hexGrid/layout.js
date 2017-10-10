@@ -28,11 +28,25 @@ let layouts = {
 };
 
 Layout = function (orientation, size, origin) {
+    /**
+     * The orientation of the layout.
+     * Choose between Layout.FLAT or Layout.POINTY
+     */
     Object.defineProperty(this, 'orientation', { writable: false, value: orientation });
+    /**
+     * The size of individual hexes in the layout
+     */
     Object.defineProperty(this, 'size', { writable: false, value: size });
+    /**
+     * The center of the entire hex grid
+     */
     Object.defineProperty(this, 'origin', { writable: false, value: origin });
 };
 
 Layout.prototype.constructor = Layout;
 Object.defineProperty(Layout, 'POINTY', { writable: false, value: layouts['pointy'] });
-Object.defineProperty(Layout, 'FLAT', { writable: false, value: layouts['flat'] });
+Object.defineProperty(Layout, 'FLAT',   { writable: false, value: layouts['flat'] });
+
+Layout.isALayout = function(layout) {
+    return layout instanceof Layout;
+};
