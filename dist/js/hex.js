@@ -5,6 +5,9 @@ Hex = function(x, y, z) {
     let depth = z;
 
     if (!depth) depth = (-x-y);
+
+    if (column === -0) column = 0;
+    if (row === -0) row = 0;
     if (depth === -0) depth = 0;
 
     this.x = () => { return column; };
@@ -36,7 +39,7 @@ Hex.subtractHexes = function (a, b) {
 };
 
 Hex.multiplyHexes = function (hex, multiple) {
-    if (!isAHex(hex) || !(typeof multiple === "number")) return;
+    if (!isAHex(hex) || !(typeof multiple === 'number')) return;
 
     return new Hex(hex.x()*multiple, hex.y()*multiple, hex.z()*multiple);
 };
@@ -61,15 +64,12 @@ let hexDirectionsMap = {
     southWest:  new Hex(-1, 0, 1),
     northWest:  new Hex(-1, 1, 0)
 };
-let directionStrings = [];
-Object.keys(hexDirectionsMap).forEach((key) => {
-    directionStrings.push(key);
-});
-hexDirectionsMap.directionStrings = directionStrings;
+hexDirectionsMap.directionStrings = Object.keys(hexDirectionsMap);
 
 Hex.getHexDirection = function(direction) {
     if (typeof direction === 'number')
         direction = hexDirectionsMap.directionStrings[direction];
+    else if (typeof direction !== 'string') return;
 
     return hexDirectionsMap[direction];
 };
