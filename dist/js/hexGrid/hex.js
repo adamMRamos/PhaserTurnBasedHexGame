@@ -33,13 +33,13 @@ Hex.addHexes = function(a, b) {
     return new Hex(a.x+b.x, a.y+b.y, a.z+b.z);
 };
 
-Hex.subtractHexes = function (a, b) {
+Hex.subtractHexes = function(a, b) {
     if (!Hex.isAHex(a) || !Hex.isAHex(b)) return;
 
     return new Hex(a.x-b.x, a.y-b.y, a.z-b.z);
 };
 
-Hex.multiplyHexes = function (hex, multiple) {
+Hex.multiplyHexes = function(hex, multiple) {
     if (!Hex.isAHex(hex) || !(typeof multiple === 'number')) return;
 
     return new Hex(hex.x*multiple, hex.y*multiple, hex.z*multiple);

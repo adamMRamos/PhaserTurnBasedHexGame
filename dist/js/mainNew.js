@@ -2,10 +2,14 @@ let game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: p
 let cursors;
 let size = new Phaser.Rectangle();
 
+let graphics;
+
 let assetLoader =  new AssetLoader();
 let hex = new Hex(0,0);
 let hex1 = new Hex(1,0);
 let hex2 = new Hex(0,1);
+
+let polygon;
 
 function preload() {
     assetLoader.loadAssets(game);
@@ -76,6 +80,28 @@ function create() {
     console.log(centerOfHex);
     game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexMarker');
 
+    let hexCorners = translator.hexCorners(layout, new Hex(3,0));
+    let hexPoints = [];
+    hexCorners.forEach((corner) => {
+        hexPoints.push(new Phaser.Point(corner.x, corner.y));
+    });
+    polygon = new Phaser.Polygon(hexPoints);
+
+    let hexCorners2 = translator.hexCorners(layout, new Hex(2,0));
+    hexPoints = [];
+    hexCorners2.forEach((corner) => {
+        hexPoints.push(new Phaser.Point(corner.x, corner.y));
+    });
+    let polygon2 = new Phaser.Polygon(hexPoints);
+
+    graphics = game.add.graphics(0,0);
+    graphics.beginFill(0xFF33ff);
+    graphics.drawPolygon(polygon.points);
+    graphics.endFill();
+
+    graphics.beginFill(0xFF3311);
+    graphics.drawPolygon(polygon2.points);
+    graphics.endFill();
 }
 
 function update() { }
