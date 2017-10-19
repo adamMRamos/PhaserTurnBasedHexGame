@@ -58,30 +58,33 @@ function create() {
     let layout = new Layout(Layout.FLAT, size, origin);
     let centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
     console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    addHexToScreen(game, centerOfHex, 40);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('north'));
     console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    addHexToScreen(game, centerOfHex, 40);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('south'));
     console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    addHexToScreen(game, centerOfHex, 40);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('northEast'));
     console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    addHexToScreen(game, centerOfHex, 40);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('southEast'));
     console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    addHexToScreen(game, centerOfHex, 40);
 
-    centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
-    console.log(centerOfHex);
-    game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexMarker');
+    let centerHexCorners = translator.hexCorners(layout, new Hex(0,0));
+    let hexPoints = [];
+    centerHexCorners.forEach((corner) => {
+        hexPoints.push(new Phaser.Point(corner.x, corner.y));
+    });
+    let centerPolygon = new Phaser.Polygon(hexPoints);
 
     let hexCorners = translator.hexCorners(layout, new Hex(3,0));
-    let hexPoints = [];
+    hexPoints = [];
     hexCorners.forEach((corner) => {
         hexPoints.push(new Phaser.Point(corner.x, corner.y));
     });
@@ -102,10 +105,28 @@ function create() {
     graphics.beginFill(0xFF3311);
     graphics.drawPolygon(polygon2.points);
     graphics.endFill();
+
+    graphics.beginFill(0xAA4411);
+    graphics.drawPolygon(centerPolygon.points);
+    graphics.endFill();
+
+    centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
+    console.log(centerOfHex);
+    game.add.sprite(centerOfHex.x-40, centerOfHex.y-(Math.sqrt(3)/2 * 40), 'hexMarker');
+
+    let hexFraction = new Hex(1.1785, 3.56);
+    let roundedHex = Hex.roundHex(hexFraction);
+    console.log(hexFraction.getInfo());
+    console.log(roundedHex.getInfo());
 }
 
 function update() { }
 
 function render() {
     game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.text(game.input.x + ' x ' + game.input.y, 32, 20);
+}
+
+function addHexToScreen(game, centerOfHex, hexSize) {
+    game.add.sprite(centerOfHex.x-hexSize, centerOfHex.y-(Math.sqrt(3)/2 * hexSize), 'hexagon');
 }

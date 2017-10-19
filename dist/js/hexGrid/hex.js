@@ -27,6 +27,24 @@ Hex.prototype.equals = function(hex) {
     return this.x === hex.x && this.y === hex.y && this.z === hex.z;
 };
 
+Hex.roundHex = function(hex) {
+    if (!Hex.isAHex(hex)) return;
+    const roundedX = Math.round(hex.x),
+        roundedY = Math.round(hex.y),
+        roundedZ = Math.round(hex.z);
+
+    const xDiff = Math.abs(roundedX-hex.x),
+        yDiff = Math.abs(roundedY-hex.y),
+        zDiff = Math.abs(roundedZ-hex.z);
+
+    let x = roundedX, y = roundedY, z = roundedZ;
+    if (xDiff > yDiff && xDiff > zDiff) x = -y-z;
+    else if (yDiff > zDiff) y = -x-z;
+    else z = -x-y;
+
+    return new Hex(x,y,z);
+};
+
 Hex.addHexes = function(a, b) {
     if (!Hex.isAHex(a) || !Hex.isAHex(b)) return;
 
@@ -58,12 +76,12 @@ Hex.hexDistance = function(hex1, hex2) {
 };
 
 let hexDirectionsMap = {
-    north:      new Hex( 0, 1,-1),
-    northEast:  new Hex( 1, 0,-1),
-    southEast:  new Hex( 1,-1, 0),
-    south:      new Hex( 0,-1, 1),
-    southWest:  new Hex(-1, 0, 1),
-    northWest:  new Hex(-1, 1, 0)
+    north:      new Hex( 0,-1, 1),
+    northEast:  new Hex( 1,-1, 0),
+    southEast:  new Hex( 1, 0,-1),
+    south:      new Hex( 0, 1,-1),
+    southWest:  new Hex(-1, 1, 0),
+    northWest:  new Hex(-1, 0, 1)
 };
 hexDirectionsMap.directionStrings = Object.keys(hexDirectionsMap);
 

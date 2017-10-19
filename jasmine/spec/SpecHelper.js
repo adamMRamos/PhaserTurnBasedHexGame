@@ -20,13 +20,12 @@ beforeEach(function () {
                 }
             }
         },
-        toBePlaying: function () {
+        toEqualPoint: function () {
             return {
                 compare: function (actual, expected) {
-                    var player = actual;
-
+                    let point1 = actual, point2 = expected;
                     return {
-                        pass: player.currentlyPlayingSong === expected && player.isPlaying
+                        pass: point1.x === point2.x && point1.y === point2.y
                     };
                 }
             };

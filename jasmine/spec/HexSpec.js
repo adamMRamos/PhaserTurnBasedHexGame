@@ -39,11 +39,20 @@ describe('Hex', () => {
     describe('Perform hex math', () => {
         let hexCoordsToUse = [[0,1], [1,0], [0,0], [1,1]];
         let hexDirectionsMap = {
-            north: new Hex( 0, 1,-1), northEast: new Hex( 1, 0,-1), southEast: new Hex( 1,-1, 0),
-            south: new Hex( 0,-1, 1), southWest: new Hex(-1, 0, 1), northWest: new Hex(-1, 1, 0)
+            north:      new Hex( 0,-1, 1), northEast:  new Hex( 1,-1, 0), southEast:  new Hex( 1, 0,-1),
+            south:      new Hex( 0, 1,-1), southWest:  new Hex(-1, 1, 0), northWest:  new Hex(-1, 0, 1)
         };
         hexDirectionsMap.directionStrings = Object.keys(hexDirectionsMap);
 
+        // noinspection JSUnresolvedFunction
+        it ('Hex rounding works as expected', () => {
+            const fractionalHexes = [
+                new Hex(0.5, -0.7), new Hex(1.2, -0.6), new Hex(0.7, -1.2),
+                new Hex(1.1, -1.3), new Hex(1.0, -1.0)
+            ];
+
+            checkHexRoundingIsAsExpected(fractionalHexes, hexDirectionsMap.northEast);
+        });
         // noinspection JSUnresolvedFunction
         it('Adding hexes works as expected', () => {
             performFunctionOnAllHexesAndHexCoordinates(
@@ -109,14 +118,12 @@ describe('Hex', () => {
             testForUndefinedResult(hex0, Hex.hexDistance);
         });
         // noinspection JSUnresolvedFunction
+        it('Rounding hex returns undefined', () => {
+            testForUndefinedResultOnOneInput(Hex.roundHex);
+        });
+        // noinspection JSUnresolvedFunction
         it('Finding hex direction returns undefined', () => {
-            let undefinedInput;
-            expect(Hex.getHexDirection(undefinedInput)).not.toBeDefined();
-            expect(Hex.getHexDirection(null)).not.toBeDefined();
-            expect(Hex.getHexDirection('hex')).not.toBeDefined();
-            expect(Hex.getHexDirection(6)).not.toBeDefined();
-            expect(Hex.getHexDirection(-1)).not.toBeDefined();
-            expect(Hex.hexLength(true)).not.toBeDefined();
+            testForUndefinedResultOnOneInput(Hex.getHexDirection);
         });
         // noinspection JSUnresolvedFunction
         it('Finding hex neighbor returns undefined', () => {
@@ -139,6 +146,13 @@ function testForUndefinedResult(validInput, func) {
     expect(func(null, null)).not.toBeDefined();
 }
 
+function testForUndefinedResultOnOneInput(func) {
+    let undefinedInput;
+    const invalidInputs = [undefinedInput, null, 'hex', 6, -1, true];
+
+    invalidInputs.forEach((invalid) => expect(func(invalid)).not.toBeDefined());
+}
+
 function checkGetInfoResults(hex, expectedStringResult) {
     expect(hex.getInfo()).toEqual(expectedStringResult);
 }
@@ -150,6 +164,13 @@ function checkHexEqualsSameHex(hex) {
 function performFunctionOnAllHexesAndHexCoordinates(hexes, hexCoords, aFunc) {
     hexes.forEach((hex) => {
         hexCoords.forEach((hexCoord) => aFunc(hex, hexCoord[0], hexCoord[1]));
+    });
+}
+
+function checkHexRoundingIsAsExpected(hexesToRound, hex) {
+    hexesToRound.forEach((fractionalHex) => {
+        const roundedHex = Hex.roundHex(fractionalHex);
+        expect(roundedHex).toEqualHex(hex);
     });
 }
 
