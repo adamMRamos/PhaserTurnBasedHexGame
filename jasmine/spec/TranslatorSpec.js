@@ -2,6 +2,7 @@
 describe('Translator', () => {
     let hex0, hexDirectlyNorthOfCenter, hexDirectlySouthOfCenter;
     let northEastHex, southEastHex, northWestHex, southWestHex;
+    let hexes;
     let hexSize40x40, centerOfLayout, flatLayout;
     let northPoint, southPoint,
         northEastPoint, southEastPoint, northWestPoint, southWestPoint;
@@ -24,6 +25,10 @@ describe('Translator', () => {
         northWestPoint = new Point(240, 265);
         southWestPoint = new Point(240, 334);
         flatLayout = new Layout(Layout.FLAT, hexSize40x40, centerOfLayout);
+        hexes = [
+            hexDirectlyNorthOfCenter, hexDirectlySouthOfCenter,
+            northEastHex, southEastHex, northWestHex, southWestHex
+        ];
     });
     // noinspection JSUnresolvedFunction
     describe('Translate from hex to pixel (FLAT layout)', () => {
@@ -117,6 +122,26 @@ describe('Translator', () => {
         // noinspection JSUnresolvedFunction
         it('south west point returns Hex(-1, 1)', () => {
             testPixelToHexConversion(southWestPoint, southWestHex, flatLayout, hexSize40x40);
+        });
+    });
+    // noinspection JSUnresolvedFunction
+    describe('Find line of hexes between hexA and hexB (FLAT Layout)', () => {
+        // noinspection JSUnresolvedFunction
+        it('Line between the hex and itself returns the hex', () => {
+            hexes.forEach((hex) => {
+                const line = translator.hexLineDraw(hex, new Hex(hex.x, hex.y));
+                expect(line.length).toEqual(1);
+                expect(line[0]).toEqualHex(hex);
+            });
+        });
+        // noinspection JSUnresolvedFunction
+        it('Line between the hex0,0 and hex3,0 returns the correct line', () => {
+            const expectedLine = [new Hex(0,0), new Hex(1,0), new Hex(2,0), new Hex(3,0)];
+            const actualLine = translator.hexLineDraw(new Hex(0,0), new Hex(3,0));
+
+            expect(actualLine.length).toEqual(expectedLine.length);
+            for (let i = 0; i < actualLine.length; i++)
+                expect(actualLine[i]).toEqualHex(expectedLine[i]);
         });
     });
 });

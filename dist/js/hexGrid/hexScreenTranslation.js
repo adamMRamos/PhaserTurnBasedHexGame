@@ -41,3 +41,27 @@ translator.hexCorners = function(layout, hex) {
 
     return corners;
 };
+
+translator.hexLineDraw = function(hexA, hexB) {
+    const hexDistance = Hex.hexDistance(hexA, hexB);
+    let lineOfHexes = [];
+
+    const step = 1/Math.max(hexDistance, 1); // use max in case hexDistance is 0
+    for (let i = 0; i <= hexDistance; i++) lineOfHexes.push(
+        Hex.roundHex(hexLerp(hexA, hexB, step*i))
+    );
+
+    return lineOfHexes;
+};
+
+function hexLerp(hexA, hexB, t) {
+    return new Hex(
+        lerp(hexA.x, hexB.x, t),
+        lerp(hexA.y, hexB.y, t),
+        lerp(hexA.z, hexB.z, t)
+    );
+}
+
+function lerp(a, b, t) {
+    return (a * (1-t)) + (b * t);
+}

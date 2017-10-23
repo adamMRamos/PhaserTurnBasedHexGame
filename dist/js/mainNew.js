@@ -1,10 +1,13 @@
 let game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: preload, create: create, update: update, render:render });
 let cursors;
-let size = new Phaser.Rectangle();
+let gameSize = new Phaser.Rectangle();
 
 let graphics;
 
 let assetLoader =  new AssetLoader();
+let size = new Point(40,40);
+let origin = new Point(300,300);
+let layout = new Layout(Layout.FLAT, size, origin);
 let hex = new Hex(0,0);
 let hex1 = new Hex(1,0);
 let hex2 = new Hex(0,1);
@@ -53,9 +56,6 @@ function create() {
 
     game.stage.backgroundColor = '#374d5c';
 
-    let size = new Point(40,40);
-    let origin = new Point(300,300);
-    let layout = new Layout(Layout.FLAT, size, origin);
     let centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
     console.log(centerOfHex);
     addHexToScreen(game, centerOfHex, 40);
@@ -76,39 +76,18 @@ function create() {
     console.log(centerOfHex);
     addHexToScreen(game, centerOfHex, 40);
 
-    let centerHexCorners = translator.hexCorners(layout, new Hex(0,0));
-    let hexPoints = [];
-    centerHexCorners.forEach((corner) => {
-        hexPoints.push(new Phaser.Point(corner.x, corner.y));
-    });
-    let centerPolygon = new Phaser.Polygon(hexPoints);
-
-    let hexCorners = translator.hexCorners(layout, new Hex(3,0));
-    hexPoints = [];
-    hexCorners.forEach((corner) => {
-        hexPoints.push(new Phaser.Point(corner.x, corner.y));
-    });
-    polygon = new Phaser.Polygon(hexPoints);
-
-    let hexCorners2 = translator.hexCorners(layout, new Hex(2,0));
-    hexPoints = [];
-    hexCorners2.forEach((corner) => {
-        hexPoints.push(new Phaser.Point(corner.x, corner.y));
-    });
-    let polygon2 = new Phaser.Polygon(hexPoints);
+    let centerPolygon = createPhaserPolygon(new Hex(0,0), layout);
+    polygon = createPhaserPolygon(new Hex(3,0), layout);
+    let polygon2 = createPhaserPolygon(new Hex(2,0), layout);
+    let polygon3 = createPhaserPolygon(new Hex(4,-1), layout);
+    let polygon4 = createPhaserPolygon(new Hex(0,-4), layout);
 
     graphics = game.add.graphics(0,0);
-    graphics.beginFill(0xFF33ff);
-    graphics.drawPolygon(polygon.points);
-    graphics.endFill();
-
-    graphics.beginFill(0xFF3311);
-    graphics.drawPolygon(polygon2.points);
-    graphics.endFill();
-
-    graphics.beginFill(0xAA4411);
-    graphics.drawPolygon(centerPolygon.points);
-    graphics.endFill();
+    drawPolygon(graphics, polygon, 0xFF33ff);
+    drawPolygon(graphics, polygon2, 0xFF3311);
+    drawPolygon(graphics, centerPolygon, 0xAA4411);
+    drawPolygon(graphics, polygon3, 0x9966CC);
+    drawPolygon(graphics, polygon4, 0x3FAE9F);
 
     centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
     console.log(centerOfHex);
@@ -118,6 +97,11 @@ function create() {
     let roundedHex = Hex.roundHex(hexFraction);
     console.log(hexFraction.getInfo());
     console.log(roundedHex.getInfo());
+
+    const lineOfHexes = translator.hexLineDraw(new Hex(4,-1), new Hex(1,-2));
+    lineOfHexes.forEach((hex) => {
+        drawPolygon(graphics, createPhaserPolygon(hex, layout), 0xAA4411);
+    });
 }
 
 function update() { }
@@ -125,6 +109,24 @@ function update() { }
 function render() {
     game.debug.cameraInfo(game.camera, 32, 32);
     game.debug.text(game.input.x + ' x ' + game.input.y, 32, 20);
+    const selectedHex = Hex.roundHex(translator.pixelToHex(layout, new Point(game.input.x, game.input.y)));
+    game.debug.text('Hex '+selectedHex.x+', '+selectedHex.y, 200, 20);
+}
+
+function createPhaserPolygon(hex, layout) {
+    let hexCorners = translator.hexCorners(layout, hex);
+    let hexPoints = [];
+    hexCorners.forEach((corner) => {
+        hexPoints.push(new Phaser.Point(corner.x, corner.y));
+    });
+
+    return new Phaser.Polygon(hexPoints);
+}
+
+function drawPolygon(graphics, polygon, color) {
+    graphics.beginFill(color);
+    graphics.drawPolygon(polygon.points);
+    graphics.endFill();
 }
 
 function addHexToScreen(game, centerOfHex, hexSize) {
