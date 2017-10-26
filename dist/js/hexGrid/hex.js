@@ -99,6 +99,18 @@ Hex.hexNeighbor = function(hex, direction) {
     return Hex.addHexes(hex, Hex.getHexDirection(direction));
 };
 
+Hex.hexRotateRight = function(hex) {
+    if (!Hex.isAHex(hex)) return;
+
+    return new Hex(-hex.y, -hex.z, -hex.x);
+};
+
+Hex.hexRotateLeft = function(hex) {
+    if (!Hex.isAHex(hex)) return;
+
+    return new Hex(-hex.z, -hex.x, -hex.y);
+};
+
 Hex.isAHex = function(hex) {
     return hex instanceof Hex;
 };

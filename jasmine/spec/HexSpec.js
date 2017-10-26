@@ -45,13 +45,41 @@ describe('Hex', () => {
         hexDirectionsMap.directionStrings = Object.keys(hexDirectionsMap);
 
         // noinspection JSUnresolvedFunction
-        it ('Hex rounding works as expected', () => {
+        it('Hex rounding works as expected', () => {
             const fractionalHexes = [
                 new Hex(0.5, -0.7), new Hex(1.2, -0.6), new Hex(0.7, -1.2),
                 new Hex(1.1, -1.3), new Hex(1.0, -1.0)
             ];
 
             checkHexRoundingIsAsExpected(fractionalHexes, hexDirectionsMap.northEast);
+        });
+        // noinspection JSUnresolvedFunction
+        describe('Hex rotating works as expected', () => {
+            const leftHexes = [
+                new Hex(1,-2), new Hex(-1,-1), new Hex(-2,1),
+                new Hex(-1,2), new Hex(1,1)
+            ];
+            const rightHexes = [
+                new Hex(1,1), new Hex(-1,2), new Hex(-2,1),
+                new Hex(-1,-1), new Hex(1,-2)
+            ];
+
+            // noinspection JSUnresolvedFunction
+            it('Hex rotates left correctly', () => {
+                let startHex = new Hex(2,-1);
+                leftHexes.forEach(hex => {
+                    startHex = Hex.hexRotateLeft(startHex);
+                    expect(startHex).toEqualHex(hex);
+                });
+            });
+            // noinspection JSUnresolvedFunction
+            it('Hex rotates right correctly', () => {
+                let startHex = new Hex(2,-1);
+                rightHexes.forEach(hex => {
+                    startHex = Hex.hexRotateRight(startHex);
+                    expect(startHex).toEqualHex(hex);
+                });
+            });
         });
         // noinspection JSUnresolvedFunction
         it('Adding hexes works as expected', () => {

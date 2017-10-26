@@ -109,6 +109,15 @@ function create() {
 
     const rectangle = HexMap.rectangleMap(6,3);
     drawMap(graphics, rectangle, layout, 0x99BBFF);
+
+    let hexToRotate = new Hex(2, -1);
+    polygon = createPhaserPolygon(hexToRotate, layout);
+    drawPolygon(graphics, polygon, 0x91FFCC);
+    for (let i = 0; i < 4; i++) {
+        hexToRotate = Hex.hexRotateLeft(hexToRotate);
+        polygon = createPhaserPolygon(hexToRotate, layout);
+        drawPolygon(graphics, polygon, 0x81FFFF);
+    }
 }
 
 function update() { }
