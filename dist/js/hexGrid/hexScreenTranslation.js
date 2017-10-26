@@ -42,6 +42,12 @@ translator.hexCorners = function(layout, hex) {
     return corners;
 };
 
+/**
+ * TO_DO add an epsilon value to nudge the line in a predictable direction.
+ * @param hexA
+ * @param hexB
+ * @returns {Array}
+ */
 translator.hexLineDraw = function(hexA, hexB) {
     const hexDistance = Hex.hexDistance(hexA, hexB);
     let lineOfHexes = [];

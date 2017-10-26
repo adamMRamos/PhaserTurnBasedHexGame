@@ -99,9 +99,16 @@ function create() {
     console.log(roundedHex.getInfo());
 
     const lineOfHexes = translator.hexLineDraw(new Hex(4,-1), new Hex(1,-2));
-    lineOfHexes.forEach((hex) => {
-        drawPolygon(graphics, createPhaserPolygon(hex, layout), 0xAA4411);
-    });
+    drawMap(graphics, lineOfHexes, layout, 0xAA4411);
+
+    const parallelogram = HexMap.parallelogramMap({x:7,y:-5}, {x:10,y:-3});
+    drawMap(graphics, parallelogram, layout, 0xAA9922);
+
+    const hexagonMap = HexMap.hexagonMap(1,1,1);
+    drawMap(graphics, hexagonMap, layout, 0xBB77FF);
+
+    const rectangle = HexMap.rectangleMap(6,3);
+    drawMap(graphics, rectangle, layout, 0x99BBFF);
 }
 
 function update() { }
@@ -121,6 +128,12 @@ function createPhaserPolygon(hex, layout) {
     });
 
     return new Phaser.Polygon(hexPoints);
+}
+
+function drawMap(graphics, map, layout, color) {
+    map.forEach(hex => {
+        drawPolygon(graphics, createPhaserPolygon(hex, layout), color);
+    });
 }
 
 function drawPolygon(graphics, polygon, color) {

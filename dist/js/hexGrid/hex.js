@@ -1,5 +1,5 @@
 
-Hex = function(x, y, z) {
+let Hex = function(x, y, z) {
     let column = x;
     let row = y;
     let depth = z;
