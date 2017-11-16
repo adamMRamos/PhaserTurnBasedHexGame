@@ -5,6 +5,7 @@ let hexSize = new Point(40,40);
 let origin = new Point(100,100);
 let layout = new Layout(Layout.FLAT, hexSize, origin);
 let hexMap;
+let marker;
 
 function preload() {
     assetLoader.loadAssets(game);
@@ -22,17 +23,8 @@ function create() {
         addHexToScreen(game, centerOfHex);
     });
 
-    const marker = game.add.sprite(0,0, assetLoader.validAssetNames.hexMarker.tag);
-    marker.anchor.setTo(0.5);
-    marker.visible = false;
-    moveIndex = game.input.addMoveCallback(() => {
-        marker.visible = true;
-        const mousePosition = new Point(game.input.worldX, game.input.worldY);
-        const hexPosition = translator.pixelToHex(layout, mousePosition);
-        const centerOfHexAsPixel = translator.hexToPixel(layout, Hex.roundHex(hexPosition));
-        marker.x = centerOfHexAsPixel.x;
-        marker.y = centerOfHexAsPixel.y;
-    }, this);
+    marker = initializeHexMarker(game);
+    moveIndex = game.input.addMoveCallback(updateHexMarker, this);
     console.log('moveIndex: ' + moveIndex);
 }
 
@@ -53,4 +45,21 @@ function addHexToScreen(game, centerOfHex) {
     let hexSprite = game.add.sprite(
         centerOfHex.x, centerOfHex.y, assetLoader.validAssetNames.hexagon.tag);
     hexSprite.anchor.set(0.5);
+}
+
+function initializeHexMarker(game) {
+    const marker = game.add.sprite(0,0, assetLoader.validAssetNames.hexMarker.tag);
+    marker.anchor.setTo(0.5);
+    marker.visible = false;
+
+    return marker;
+}
+
+function updateHexMarker() {
+    marker.visible = true;
+    const mousePosition = new Point(game.input.worldX, game.input.worldY);
+    const hexPosition = translator.pixelToHex(layout, mousePosition);
+    const centerOfHexAsPixel = translator.hexToPixel(layout, Hex.roundHex(hexPosition));
+    marker.x = centerOfHexAsPixel.x;
+    marker.y = centerOfHexAsPixel.y;
 }
