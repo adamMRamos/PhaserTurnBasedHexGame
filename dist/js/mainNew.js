@@ -58,23 +58,23 @@ function create() {
 
     let centerOfHex = translator.hexToPixel(layout, new Hex(0,0));
     console.log(centerOfHex);
-    addHexToScreen(game, centerOfHex, 40);
+    addHexToScreen(game, centerOfHex);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('north'));
     console.log(centerOfHex);
-    addHexToScreen(game, centerOfHex, 40);
+    addHexToScreen(game, centerOfHex);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('south'));
     console.log(centerOfHex);
-    addHexToScreen(game, centerOfHex, 40);
+    addHexToScreen(game, centerOfHex);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('northEast'));
     console.log(centerOfHex);
-    addHexToScreen(game, centerOfHex, 40);
+    addHexToScreen(game, centerOfHex);
 
     centerOfHex = translator.hexToPixel(layout, Hex.getHexDirection('southEast'));
     console.log(centerOfHex);
-    addHexToScreen(game, centerOfHex, 40);
+    addHexToScreen(game, centerOfHex);
 
     let centerPolygon = createPhaserPolygon(new Hex(0,0), layout);
     polygon = createPhaserPolygon(new Hex(3,0), layout);
@@ -125,8 +125,12 @@ function update() { }
 function render() {
     game.debug.cameraInfo(game.camera, 32, 32);
     game.debug.text(game.input.x + ' x ' + game.input.y, 32, 20);
+
     const selectedHex = Hex.roundHex(translator.pixelToHex(layout, new Point(game.input.x, game.input.y)));
     game.debug.text('Hex '+selectedHex.x+', '+selectedHex.y, 200, 20);
+
+    const selectedOffsetHex = OffsetCoordinate.hexToQOffset(OffsetCoordinate.ODD, selectedHex);
+    game.debug.text('OffsetHex '+selectedOffsetHex.x+', '+selectedOffsetHex.y, 200, 40);
 }
 
 function createPhaserPolygon(hex, layout) {
@@ -151,6 +155,7 @@ function drawPolygon(graphics, polygon, color) {
     graphics.endFill();
 }
 
-function addHexToScreen(game, centerOfHex, hexSize) {
-    game.add.sprite(centerOfHex.x-hexSize, centerOfHex.y-(Math.sqrt(3)/2 * hexSize), 'hexagon');
+function addHexToScreen(game, centerOfHex) {
+    let hex = game.add.sprite(centerOfHex.x, centerOfHex.y, 'hexagon');
+    hex.anchor.set(0.5);
 }
