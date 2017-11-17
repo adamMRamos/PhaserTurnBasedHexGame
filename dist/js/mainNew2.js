@@ -42,20 +42,20 @@ function create() {
     const unit = new Unit(
         game, coordinateToPlaceUnit.x, coordinateToPlaceUnit.y, assetLoader.validAssetNames.cube.tag);
     hexMapGroup.add(unit);
+
+    game.input.onTap.add(() => {
+        console.log('TAP');
+        console.log((game.input.x-hexMapGroup.x)+','+(game.input.y-hexMapGroup.y));
+        const tappedPoint = new Point(game.input.x-hexMapGroup.x, game.input.y-hexMapGroup.y);
+        const tappedHex = Hex.roundHex(translator.pixelToHex(layout, tappedPoint));
+        const newPoint = translator.hexToPixel(layout,tappedHex);
+        unit.x = newPoint.x;
+        unit.y = newPoint.y;
+    });
 }
 
 function update() {
-    // if (cursors.up.isDown) {
-    //     console.log('up');
-    //     game.camera.y -= 8;
-    // }
-    // else if (cursors.down.isDown) game.camera.y += 8;
-    // if (cursors.left.isDown) game.camera.x -= 8;
-    // else if (cursors.right.isDown) game.camera.x += 8;
-    if (cursors.up.isDown) {
-        console.log('up');
-        hexMapGroup.y += 8;
-    }
+    if (cursors.up.isDown) hexMapGroup.y += 8;
     else if (cursors.down.isDown) hexMapGroup.y -= 8;
     if (cursors.left.isDown) hexMapGroup.x += 8;
     else if (cursors.right.isDown) hexMapGroup.x -= 8;
