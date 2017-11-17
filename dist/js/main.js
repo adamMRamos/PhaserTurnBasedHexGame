@@ -57,12 +57,12 @@ function create() {
     board = new Board(game, gridSizeX, gridSizeY);
 
     //unit = createUnit(game, validAssetNames.cube.tag);
-    unit = new Unit(game, 100, 50, validAssetNames.cube.tag);
+    unit = new UnitOld(game, 100, 50, validAssetNames.cube.tag);
     board.addSpriteToBoard(unit);
     board.placeGamePieceOntoTile(unit, {x:0, y:0});
 
     //var enemyUnit = createUnit(game, validAssetNames.redCube.tag);
-    let enemyUnit = new Unit(game, 100, 50, validAssetNames.redCube.tag);
+    let enemyUnit = new UnitOld(game, 100, 50, validAssetNames.redCube.tag);
     board.addSpriteToBoard(enemyUnit);
     board.placeGamePieceOntoTile(enemyUnit, {x:1, y:1});
 
