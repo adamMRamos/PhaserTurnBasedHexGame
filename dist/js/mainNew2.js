@@ -73,7 +73,7 @@ function render() {
     game.debug.text('OffsetHex '+selectedOffsetHex.x+', '+selectedOffsetHex.y, 200, 40);
 
     game.debug.text('HG Mouse pos: '+(game.input.x-hexMapGroup.x)+', '+(game.input.y-hexMapGroup.y), 32, 120);
-    game.debug.text('HexGridLoc: '+(hexMapGroup.x)+', '+(hexMapGroup.y), 32, 140);
+    game.debug.text('Board pos: '+(hexMapGroup.x)+', '+(hexMapGroup.y), 32, 140);
     game.debug.text('MarkerLoc: '+(marker.x)+', '+(marker.y), 32, 160);
 }
 
