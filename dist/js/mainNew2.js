@@ -6,8 +6,6 @@ let hexSize = new Point(40,40);
 let origin = new Point(100,100);
 let layout = new Layout(Layout.FLAT, hexSize, origin);
 let hexBoard;
-//let hexMapGroup;
-//let hexMap;
 let marker;
 
 function preload() {

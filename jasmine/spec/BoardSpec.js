@@ -45,21 +45,38 @@ describe('Board', () => {
 
     // noinspection JSUnresolvedFunction
     describe('Find Objects', () => {
-        // noinspection JSUnresolvedFunction
-        it('Can find objects based on hex position', () => {
-            const fakeSprite = {x: 0, y: 0};
-            const hex = new Hex(0,0);
+        const fakeSprite2 = {x:1,y:1, a:'a'};
+        const fakeSprite = {x: 0, y: 0, b:'b'};
+        const hex = new Hex(0,0);
+        const point = new Point(100,100);
+
+        beforeEach(() => {
             testHexBoard.addObjectAtHex(fakeSprite, hex);
-            expect(testHexBoard.findObjectAtHex(hex)).toEqual(fakeSprite);
+            testHexBoard.addObjectAtHex(fakeSprite2, hex);
         });
 
         // noinspection JSUnresolvedFunction
-        it('Can find objects based on pixel position', () => {
-            const fakeSprite = {x: 0, y: 0};
-            const point = new Point(100,100);
-            const hex = new Hex(0,0);
-            testHexBoard.addObjectAtHex(fakeSprite, hex);
-            expect(testHexBoard.findObjectAtPosition(point)).toEqual(fakeSprite);
+        it('Can find top object based on hex position', () => {
+            const foundObject = testHexBoard.findTopObjectAtHex(hex);
+            expect(foundObject).toEqual(fakeSprite);
+        });
+
+        // noinspection JSUnresolvedFunction
+        it('Can find top object based on pixel position', () => {
+            const foundObject = testHexBoard.findTopObjectAtPosition(point);
+            expect(foundObject).toEqual(fakeSprite);
+        });
+
+        // noinspection JSUnresolvedFunction
+        it('Top object based on hex position is not the second object', () => {
+            const foundObject = testHexBoard.findTopObjectAtHex(hex);
+            expect(foundObject).not.toEqual(fakeSprite2);
+        });
+
+        // noinspection JSUnresolvedFunction
+        it('Top object based on pixel position is not the second object', () => {
+            const foundObject = testHexBoard.findTopObjectAtPosition(point);
+            expect(foundObject).not.toEqual(fakeSprite2);
         });
     });
 

@@ -7,13 +7,6 @@ class HexBoard {
         this.hexMapGroup.y = origin.y;
         const hexSize = new Point(40,40);
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
-
-        // const hexMap = HexMap.rectangleMap(xTiles,yTiles);
-        // hexMap.forEach(hex => {
-        //     let centerOfHex = translator.hexToPixel(layout, hex);
-        //     const addHex = addHexToScreen(game, centerOfHex);
-        //     this.hexMapGroup.add(addHex);
-        // });
     }
 
     addObjectAtHex(object, hex) {
@@ -33,14 +26,14 @@ class HexBoard {
         return object;
     }
 
-    findObjectAtHex(hex) {
+    findTopObjectAtHex(hex) {
         const positionOfObject = translator.hexToPixel(this.layout, hex);
-        return findObjectWithBoardCoordinates(this.hexMapGroup, positionOfObject.x, positionOfObject.y);
+        return findTopObjectWithBoardCoordinates(this.hexMapGroup, positionOfObject.x, positionOfObject.y);
     }
 
-    findObjectAtPosition(position) {
+    findTopObjectAtPosition(position) {
         const hexOfObject = Hex.roundHex(translator.pixelToHex(this.layout, position));
-        return this.findObjectAtHex(hexOfObject);
+        return this.findTopObjectAtHex(hexOfObject);
     }
 
     addXY(x, y) {
@@ -71,7 +64,7 @@ class HexBoard {
     }
 }
 
-function findObjectWithBoardCoordinates(groupOfObjects, x, y) {
+function findTopObjectWithBoardCoordinates(groupOfObjects, x, y) {
     let objectToFind = null;
     groupOfObjects.forEach(object => {
         if (!objectToFind && object.x === x && object.y === y)
