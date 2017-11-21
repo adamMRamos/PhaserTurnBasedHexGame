@@ -4,7 +4,7 @@ class Unit extends Phaser.Sprite {
         super(game, x, y, unitImageTag);
 
         this.anchor.setTo(0.5, 0.5);
-        this.unitFrame = new UnitFrame(hexBoardTranslator.pixelToHex(new Point(x, y)));
+        this.unitFrame = new UnitFrame(hexBoardTranslator.pixelToHex(new Point(x, y)), 5);
     }
 
     setHex(hex, hexBoardTranslator) {

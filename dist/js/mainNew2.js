@@ -32,14 +32,26 @@ function create() {
     console.log('moveIndex: ' + moveIndex);
 
     const unit = new Unit(hexBoardTranslator, game, 0, 0, assetLoader.validAssetNames.cube.tag);
-    hexBoard.addObject(unit);
+    hexBoard.addUnit(unit);
     unit.setHex(new Hex(10, 0), hexBoardTranslator);
 
+    const unit2 = new Unit(hexBoardTranslator, game, 0, 0, assetLoader.validAssetNames.redCube.tag);
+    hexBoard.addUnit(unit2);
+    unit2.setHex(new Hex(10, -2), hexBoardTranslator);
+
+    let selectedUnit = null;
     game.input.onTap.add(() => {
         const hexBoardPosition = hexBoard.currentPosition();
         console.log('TAP');
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
-        unit.moveToHex(hexBoard.toBoardHex(game.input.x, game.input.y), hexBoardTranslator);
+        if (!selectedUnit)
+            selectedUnit = hexBoard.findTopUnitAtPosition(
+                hexBoard.toBoardPosition(game.input.x, game.input.y)
+            );
+        else {
+            selectedUnit.moveToHex(hexBoard.toBoardHex(game.input.x, game.input.y), hexBoardTranslator);
+            selectedUnit = null;
+        }
     });
 }
 
@@ -75,7 +87,9 @@ function createHexMapAndHexGroup(xTiles, yTiles) {
         const addHex = addHexToScreen(game, centerOfHex);
         hexMapGroup.add(addHex);
     });
-    return {group: hexMapGroup, map: hexMap};
+    const unitsLayer = game.add.group();
+    hexMapGroup.add(unitsLayer);
+    return {group: hexMapGroup, unitsGroup: unitsLayer, map: hexMap};
 }
 
 function addHexToScreen(game, centerOfHex) {

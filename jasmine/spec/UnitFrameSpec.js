@@ -18,7 +18,7 @@ describe('Unit', () => {
 
     beforeEach(() => {
         unitHexPosition = new Hex(10,0);
-        unitFrame = new UnitFrame(unitHexPosition);
+        unitFrame = new UnitFrame(unitHexPosition, 2);
     });
 
     // noinspection JSUnresolvedFunction

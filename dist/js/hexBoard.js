@@ -2,11 +2,16 @@
 class HexBoard {
     constructor(hexMapGroup, origin) {
         this.hexMapGroup = hexMapGroup.group;
+        this.unitsLayer = hexMapGroup.unitsGroup;
         this.hexMap = hexMapGroup.map;
         this.hexMapGroup.x = origin.x;
         this.hexMapGroup.y = origin.y;
         const hexSize = new Point(40,40);
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
+    }
+
+    addUnit(unit) {
+        return this.unitsLayer.add(unit);
     }
 
     addObject(object) {
@@ -28,9 +33,19 @@ class HexBoard {
         return this.hexMapGroup.add(object);
     }
 
+    findTopUnitAtHex(hex) {
+        const positionOfObject = translator.hexToPixel(this.layout, hex);
+        return findTopObjectWithBoardCoordinates(this.unitsLayer, positionOfObject.x, positionOfObject.y);
+    }
+
     findTopObjectAtHex(hex) {
         const positionOfObject = translator.hexToPixel(this.layout, hex);
         return findTopObjectWithBoardCoordinates(this.hexMapGroup, positionOfObject.x, positionOfObject.y);
+    }
+
+    findTopUnitAtPosition(position) {
+        const hexOfObject = Hex.roundHex(translator.pixelToHex(this.layout, position));
+        return this.findTopUnitAtHex(hexOfObject);
     }
 
     findTopObjectAtPosition(position) {

@@ -1,7 +1,7 @@
 class UnitFrame {
-    constructor(hex) {
+    constructor(hex, maxMoves) {
         this.hex = hex;
-        this.maxMoves = 2;
+        this.maxMoves = maxMoves;
         this.availableMoves = this.maxMoves;
     }
 
