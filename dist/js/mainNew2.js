@@ -43,10 +43,10 @@ function create() {
 }
 
 function update() {
-    if (cursors.up.isDown) hexBoard.addXY(0, -8);
-    else if (cursors.down.isDown) hexBoard.addXY(0, +8);
-    if (cursors.left.isDown) hexBoard.addXY(-8, 0);
-    else if (cursors.right.isDown) hexBoard.addXY(+8, 0);
+    if (cursors.up.isDown) hexBoard.addXY(0, +8);
+    else if (cursors.down.isDown) hexBoard.addXY(0, -8);
+    if (cursors.left.isDown) hexBoard.addXY(+8, 0);
+    else if (cursors.right.isDown) hexBoard.addXY(-8, 0);
 }
 
 function render() {

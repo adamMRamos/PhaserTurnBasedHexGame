@@ -3,7 +3,9 @@ describe('Board', () => {
     /*
     a board
 	    has to insert stuff
-	    get stuff out for manipulation
+	    can find objects
+	        top object at hex
+	        top object at position
 	    has to move
 	    translate world position to board position
 	        from world to board pixel or hex
