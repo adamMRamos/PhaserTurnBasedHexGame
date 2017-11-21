@@ -5,6 +5,10 @@ class UnitFrame {
         this.availableMoves = this.maxMoves;
     }
 
+    setHex(hex) {
+        this.hex = hex;
+    }
+
     moveToHexAtPosition(position, hexBoardTranslator) {
         const hexToMoveTo = hexBoardTranslator.pixelToHex(position);
         this.moveToHex(hexToMoveTo);
@@ -13,7 +17,7 @@ class UnitFrame {
     moveToHex(hex) {
         const distance = Hex.hexDistance(this.hex, hex);
         if (distance <= this.maxMoves && distance <= this.availableMoves) {
-            this.hex = hex;
+            this.setHex(hex);
             this.availableMoves -= distance;
         }
     }

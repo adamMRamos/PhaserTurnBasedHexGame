@@ -9,12 +9,15 @@ class HexBoard {
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
     }
 
+    addObject(object) {
+        return this.hexMapGroup.add(object);
+    }
+
     addObjectAtHex(object, hex) {
         const centerOfHex = translator.hexToPixel(this.layout, hex);
         object.x = centerOfHex.x;
         object.y = centerOfHex.y;
-        this.hexMapGroup.add(object);
-        return object;
+        return this.hexMapGroup.add(object);
     }
 
     addObjectAtPosition(object, point) {
@@ -22,8 +25,7 @@ class HexBoard {
         const centerOfHex = translator.hexToPixel(this.layout, hex);
         object.x = centerOfHex.x;
         object.y = centerOfHex.y;
-        this.hexMapGroup.add(object);
-        return object;
+        return this.hexMapGroup.add(object);
     }
 
     findTopObjectAtHex(hex) {

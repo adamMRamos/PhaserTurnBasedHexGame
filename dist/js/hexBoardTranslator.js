@@ -7,4 +7,8 @@ class HexBoardTranslator {
     pixelToHex(point) {
         return Hex.roundHex(translator.pixelToHex(this.layout, point));
     }
+
+    hexToPixel(hex) {
+        return translator.hexToPixel(this.layout, hex);
+    }
 }

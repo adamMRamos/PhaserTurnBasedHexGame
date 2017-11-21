@@ -7,6 +7,7 @@ let origin = new Point(100,100);
 let layout = new Layout(Layout.FLAT, hexSize, origin);
 let hexBoard;
 let marker;
+let hexBoardTranslator;
 
 function preload() {
     assetLoader.loadAssets(game);
@@ -22,6 +23,7 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
 
+    hexBoardTranslator = new HexBoardTranslator(layout);
     hexBoard = new HexBoard(createHexMapAndHexGroup(12, 7), origin);
 
     marker = initializeHexMarker(game);
@@ -29,16 +31,15 @@ function create() {
     moveIndex = game.input.addMoveCallback(updateHexMarker, this);
     console.log('moveIndex: ' + moveIndex);
 
-    const unit = new Unit(game, 0, 0, assetLoader.validAssetNames.cube.tag);
-    hexBoard.addObjectAtHex(unit, new Hex(10, 0));
+    const unit = new Unit(hexBoardTranslator, game, 0, 0, assetLoader.validAssetNames.cube.tag);
+    hexBoard.addObject(unit);
+    unit.setHex(new Hex(10, 0), hexBoardTranslator);
 
     game.input.onTap.add(() => {
         const hexBoardPosition = hexBoard.currentPosition();
         console.log('TAP');
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
-        const newPoint = translator.hexToPixel(layout, hexBoard.toBoardHex(game.input.x, game.input.y));
-        unit.x = newPoint.x;
-        unit.y = newPoint.y;
+        unit.moveToHex(hexBoard.toBoardHex(game.input.x, game.input.y), hexBoardTranslator);
     });
 }
 

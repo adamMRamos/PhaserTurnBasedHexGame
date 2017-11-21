@@ -1,9 +1,25 @@
 
 class Unit extends Phaser.Sprite {
-    constructor(game, x, y, unitImageTag) {
+    constructor(hexBoardTranslator, game, x, y, unitImageTag) {
         super(game, x, y, unitImageTag);
 
         this.anchor.setTo(0.5, 0.5);
-        this.maxMoves = 2;
+        this.unitFrame = new UnitFrame(hexBoardTranslator.pixelToHex(new Point(x, y)));
     }
+
+    setHex(hex, hexBoardTranslator) {
+        this.unitFrame.setHex(hex);
+        reorientUnitToUnitFrameHex(this, this.unitFrame.hex, hexBoardTranslator);
+    }
+
+    moveToHex(hex, hexBoardTranslator) {
+        this.unitFrame.moveToHex(hex);
+        reorientUnitToUnitFrameHex(this, this.unitFrame.hex, hexBoardTranslator);
+    }
+}
+
+function reorientUnitToUnitFrameHex(unit, unitFrameHex, hexBoardTranslator) {
+    const newPosition = hexBoardTranslator.hexToPixel(unitFrameHex);
+    unit.x = newPosition.x;
+    unit.y = newPosition.y;
 }
