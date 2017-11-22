@@ -21,4 +21,8 @@ class UnitFrame {
             this.availableMoves -= distance;
         }
     }
+
+    canCollideWith(unitFrame) {
+        return this.availableMoves > 0 && Hex.hexDistance(this.hex, unitFrame.hex);
+    }
 }

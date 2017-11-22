@@ -27,9 +27,17 @@ Hex.prototype.equals = function(hex) {
     return this.x === hex.x && this.y === hex.y && this.z === hex.z;
 };
 
-Hex.rangeOfHexes = function(centerHex, range) {
+Hex.radiusOfHexes = function(centerHex, range) {
     const hexes = [];
-
+    for (let dx = -range; dx <= range; dx++) {
+        for (let dy = -range; dy <= range; dy++) {
+            for (let dz = -range; dz <= range; dz++) {
+                if (dx+dy+dz === 0)
+                    hexes.push(Hex.addHexes(centerHex, new Hex(dx, dy, dz)));
+            }
+        }
+    }
+    return hexes;
 };
 
 Hex.roundHex = function(hex) {

@@ -31,8 +31,6 @@ class HexMap {
     }
 
     static customHexagon(centerHex, range) {
-        //let radius = Math.max(Math.abs(x),Math.abs(y), Math.abs(z));
-
         const map = new HexMap();
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {
@@ -42,13 +40,6 @@ class HexMap {
                 }
             }
         }
-
-        // for (let q = -radius; q <= radius; q++) {
-        //     const r1 = Math.max(-radius, -q-radius);
-        //     const r2 = Math.min(radius, -q+radius);
-        //
-        //     for (let r = r1; r <= r2; r++) map.insertHex(new Hex(q,r));
-        // }
         return map;
     }
 

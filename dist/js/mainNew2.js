@@ -31,13 +31,20 @@ function create() {
     moveIndex = game.input.addMoveCallback(updateHexMarker, this);
     console.log('moveIndex: ' + moveIndex);
 
-    const unit = new Unit(hexBoardTranslator, game, 0, 0, assetLoader.validAssetNames.cube.tag);
-    hexBoard.addUnit(unit);
-    unit.setHex(new Hex(10, 0), hexBoardTranslator);
+    const player1SpawnHexes = Hex.radiusOfHexes(new Hex(10,0), 1);
+    const player2SpawnHexes = Hex.radiusOfHexes(new Hex(2,0), 1);
 
-    const unit2 = new Unit(hexBoardTranslator, game, 0, 0, assetLoader.validAssetNames.redCube.tag);
-    hexBoard.addUnit(unit2);
-    unit2.setHex(new Hex(10, -2), hexBoardTranslator);
+    const spawnUnitOntoHex = (hex, unitAssetTag) => {
+        const unit = new Unit(hexBoardTranslator, game, 0, 0, unitAssetTag);
+        hexBoard.addUnit(unit);
+        unit.setHex(hex, hexBoardTranslator);
+    };
+    player1SpawnHexes.forEach(hex => {
+        spawnUnitOntoHex(hex, assetLoader.validAssetNames.cube.tag);
+    });
+    player2SpawnHexes.forEach(hex => {
+        spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag);
+    });
 
     let selectedUnit = null;
     game.input.onTap.add(() => {
@@ -82,8 +89,8 @@ function render() {
 
 function createHexMapAndHexGroup(xTiles, yTiles) {
     const hexMapGroup = game.add.group();
-    //const hexMap = HexMap.rectangleMap(xTiles, yTiles);
-    const hexMap = HexMap.customHexagon(new Hex(3,0), 3);
+    //const hexMap = HexMap.customHexagon(new Hex(10,0),1);
+    const hexMap = HexMap.rectangleMap(xTiles, yTiles);
     hexMap.forEach(hex => {
         let centerOfHex = translator.hexToPixel(layout, hex);
         const addHex = addHexToScreen(game, centerOfHex);
