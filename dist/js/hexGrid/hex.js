@@ -27,6 +27,11 @@ Hex.prototype.equals = function(hex) {
     return this.x === hex.x && this.y === hex.y && this.z === hex.z;
 };
 
+Hex.rangeOfHexes = function(centerHex, range) {
+    const hexes = [];
+
+};
+
 Hex.roundHex = function(hex) {
     if (!Hex.isAHex(hex)) return;
     const roundedX = Math.round(hex.x),

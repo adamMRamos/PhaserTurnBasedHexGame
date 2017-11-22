@@ -44,12 +44,13 @@ function create() {
         const hexBoardPosition = hexBoard.currentPosition();
         console.log('TAP');
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
-        if (!selectedUnit)
+        if (!selectedUnit) {
             selectedUnit = hexBoard.findTopUnitAtPosition(
                 hexBoard.toBoardPosition(game.input.x, game.input.y)
             );
+        }
         else {
-            selectedUnit.moveToHex(hexBoard.toBoardHex(game.input.x, game.input.y), hexBoardTranslator);
+            hexBoard.tryToMoveUnitToHex(selectedUnit, hexBoard.toBoardHex(game.input.x, game.input.y));
             selectedUnit = null;
         }
     });
@@ -81,7 +82,8 @@ function render() {
 
 function createHexMapAndHexGroup(xTiles, yTiles) {
     const hexMapGroup = game.add.group();
-    const hexMap = HexMap.rectangleMap(xTiles, yTiles);
+    //const hexMap = HexMap.rectangleMap(xTiles, yTiles);
+    const hexMap = HexMap.customHexagon(new Hex(3,0), 3);
     hexMap.forEach(hex => {
         let centerOfHex = translator.hexToPixel(layout, hex);
         const addHex = addHexToScreen(game, centerOfHex);

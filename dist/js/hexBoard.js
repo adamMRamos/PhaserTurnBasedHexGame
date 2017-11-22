@@ -11,10 +11,24 @@ class HexBoard {
     }
 
     tryToMoveUnitToHex(unit, hex) {
-        if (!findTopObjectWithHex(this.unitsLayer, hex))
+        const possibleUnitToCollideWith = findTopObjectWithHex(this.unitsLayer, hex);
+        if (!possibleUnitToCollideWith)
             unit.moveToHex(hex, {
                 hexToPixel: (hex) => translator.hexToPixel(this.layout, hex)
             });
+        else if (unit !== possibleUnitToCollideWith)
+            UnitCollisionHandler.handleCollision(unit, possibleUnitToCollideWith);
+
+        this.cleanUpUnits([unit, possibleUnitToCollideWith]);
+    }
+
+    cleanUpUnits(units) {
+        units.forEach(unit => {
+            if (unit && !unit.alive) {
+                console.log(unit.alive);
+                this.unitsLayer.remove(unit);
+            }
+        });
     }
 
     addUnit(unit) {
@@ -100,7 +114,7 @@ function findTopObjectWithBoardCoordinates(groupOfObjects, x, y) {
 function findTopObjectWithHex(groupOfObjects, hex) {
     let objectToFind = null;
     groupOfObjects.forEach(object => {
-        if (!objectToFind && object.hex.equals(hex)) objectToFind = object;
+        if (!objectToFind && object.hex().equals(hex)) objectToFind = object;
     });
     return objectToFind;
 }
