@@ -10,6 +10,13 @@ class HexBoard {
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
     }
 
+    tryToMoveUnitToHex(unit, hex) {
+        if (!findTopObjectWithHex(this.unitsLayer, hex))
+            unit.moveToHex(hex, {
+                hexToPixel: (hex) => translator.hexToPixel(this.layout, hex)
+            });
+    }
+
     addUnit(unit) {
         return this.unitsLayer.add(unit);
     }
@@ -86,6 +93,14 @@ function findTopObjectWithBoardCoordinates(groupOfObjects, x, y) {
     groupOfObjects.forEach(object => {
         if (!objectToFind && object.x === x && object.y === y)
             objectToFind = object;
+    });
+    return objectToFind;
+}
+
+function findTopObjectWithHex(groupOfObjects, hex) {
+    let objectToFind = null;
+    groupOfObjects.forEach(object => {
+        if (!objectToFind && object.hex.equals(hex)) objectToFind = object;
     });
     return objectToFind;
 }

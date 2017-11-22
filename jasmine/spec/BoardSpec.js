@@ -2,27 +2,33 @@
 describe('Board', () => {
     /*
     a board
-	    has to insert stuff
+	    can insert stuff
 	    can find objects
 	        top object at hex
 	        top object at position
-	    has to move
+        can move units
+	    can move itself
 	    translate world position to board position
 	        from world to board pixel or hex
 	        from board pixel or hex to world
 	*/
     const origin = new Point(100,100);
     let testHexBoard;
+    let MockPhaserGroup = function() {
+        const objects = [];
+        return {
+            add: (object) => objects.push(object),
+            forEach: (callback) => objects.forEach(callback),
+            x:0,
+            y:0
+        }
+    };
+    MockPhaserGroup.prototype.constructor = MockPhaserGroup;
 
     beforeEach(() => {
-        const objects = [];
         const mockGroupObject = {
-            group: {
-                add: (object) => objects.push(object),
-                forEach: (callback) => objects.forEach(callback),
-                x:0,
-                y:0
-            },
+            group: new MockPhaserGroup(),
+            unitsGroup: new MockPhaserGroup(),
             map: {}
         };
         testHexBoard = new HexBoard(mockGroupObject, origin);
@@ -47,8 +53,8 @@ describe('Board', () => {
 
     // noinspection JSUnresolvedFunction
     describe('Find Objects', () => {
-        const fakeSprite2 = {x:1,y:1, a:'a'};
         const fakeSprite = {x: 0, y: 0, b:'b'};
+        const fakeSprite2 = {x:1, y:1, a:'a'};
         const hex = new Hex(0,0);
         const point = new Point(100,100);
 
@@ -79,6 +85,32 @@ describe('Board', () => {
         it('Top object based on pixel position is not the second object', () => {
             const foundObject = testHexBoard.findTopObjectAtPosition(point);
             expect(foundObject).not.toEqual(fakeSprite2);
+        });
+    });
+
+    // noinspection JSUnresolvedFunction
+    describe('Can move units', () => {
+        const hex = new Hex(0,0);
+        const hex2 = new Hex(1,0);
+        const hex3 = new Hex(0,1);
+        const fakeSprite = new UnitFrame(hex, 5);
+        const fakeSprite2 = new UnitFrame(hex2, 5);
+
+        beforeEach(() => {
+            testHexBoard.addUnit(fakeSprite);
+            testHexBoard.addUnit(fakeSprite2);
+        });
+
+        // noinspection JSUnresolvedFunction
+        it('Units can move to empty spaces', () => {
+            testHexBoard.tryToMoveUnitToHex(fakeSprite, hex3);
+            expect(fakeSprite.hex).toEqualHex(hex3);
+        });
+
+        // noinspection JSUnresolvedFunction
+        it('Units cant move on top of each other', () => {
+            testHexBoard.tryToMoveUnitToHex(fakeSprite, hex2);
+            expect(fakeSprite.hex).not.toEqualHex(hex2);
         });
     });
 
