@@ -34,16 +34,16 @@ function create() {
     const player1SpawnHexes = Hex.radiusOfHexes(new Hex(10,0), 1);
     const player2SpawnHexes = Hex.radiusOfHexes(new Hex(2,0), 1);
 
-    const spawnUnitOntoHex = (hex, unitAssetTag) => {
-        const unit = new Unit(hexBoardTranslator, game, 0, 0, unitAssetTag);
+    const spawnUnitOntoHex = (hex, unitAssetTag, team) => {
+        const unit = new Unit(hexBoardTranslator, game, 0, 0, unitAssetTag, team);
         hexBoard.addUnit(unit);
         unit.setHex(hex, hexBoardTranslator);
     };
     player1SpawnHexes.forEach(hex => {
-        spawnUnitOntoHex(hex, assetLoader.validAssetNames.cube.tag);
+        spawnUnitOntoHex(hex, assetLoader.validAssetNames.cube.tag, '1');
     });
     player2SpawnHexes.forEach(hex => {
-        spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag);
+        spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag, '2');
     });
 
     let selectedUnit = null;

@@ -31,7 +31,6 @@ class HexMap {
     }
 
     static customHexagon(centerHex, range) {
-        const map = new HexMap();
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {
                 for (let dz = -range; dz <= range; dz++) {

@@ -10,12 +10,15 @@ class HexBoard {
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
     }
 
+
     tryToMoveUnitToHex(unit, hex) {
         const possibleUnitToCollideWith = findTopObjectWithHex(this.unitsLayer, hex);
-        if (!possibleUnitToCollideWith)
-            unit.moveToHex(hex, {
+        if (!possibleUnitToCollideWith) {
+            const trueDistance = findTrueDistanceToHex(unit, hex, this.unitsLayer);
+            unit.moveToHex(hex, trueDistance, {
                 hexToPixel: (hex) => translator.hexToPixel(this.layout, hex)
             });
+        }
         else if (unit !== possibleUnitToCollideWith)
             UnitCollisionHandler.handleCollision(unit, possibleUnitToCollideWith);
 
@@ -100,6 +103,43 @@ class HexBoard {
     fromBoardPosition(worldX, worldY) {
         return new Point(worldX+this.hexMapGroup.x, worldY+this.hexMapGroup.y);
     }
+}
+
+function findTrueDistanceToHex(unit, destinationHex, unitsLayer) {
+    const start = unit.hex();
+    const movement = unit.movesLeft();
+    const visited = {};
+    visited[start.getInfo()] = start;
+
+    const fringes = [];
+    fringes.push([start]);
+
+    let distanceToDestinationHex = null;
+
+    for (let radiusLevel = 1; radiusLevel <= movement; radiusLevel++) {
+        fringes.push([]);
+        fringes[radiusLevel-1].forEach(hex => {
+            for (let direction = 0; direction < 6; direction++) {
+                const neighbor = Hex.hexNeighbor(hex, direction);
+
+                const currentOccupant = findTopObjectWithHex(unitsLayer, neighbor);
+                if (!visited[neighbor.getInfo()] && pathNotBlocked(currentOccupant, unit)) {
+                    if (neighbor.equals(destinationHex)) {
+                        console.log('\tfound the destination');
+                        console.log('\tThe true distance is: '+radiusLevel);
+                        distanceToDestinationHex = radiusLevel;
+                    }
+                    visited[neighbor.getInfo()] = neighbor;
+                    fringes[radiusLevel].push(neighbor);
+                }
+            }
+        });
+    }
+    return distanceToDestinationHex;
+}
+
+function pathNotBlocked(possibleBlock, unit) {
+    return !possibleBlock || possibleBlock.team === unit.team;
 }
 
 function findTopObjectWithBoardCoordinates(groupOfObjects, x, y) {

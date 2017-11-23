@@ -14,15 +14,15 @@ class UnitFrame {
         this.moveToHex(hexToMoveTo);
     }
 
-    moveToHex(hex) {
-        const distance = Hex.hexDistance(this.hex, hex);
-        if (distance <= this.maxMoves && distance <= this.availableMoves) {
+    moveToHex(hex, distance) {
+        //const distance = Hex.hexDistance(this.hex, hex);
+        if (distance && distance <= this.maxMoves && distance <= this.availableMoves) {
             this.setHex(hex);
             this.availableMoves -= distance;
         }
     }
 
-    canCollideWith(unitFrame) {
-        return this.availableMoves > 0 && Hex.hexDistance(this.hex, unitFrame.hex);
+    hasActionsLeft() {
+        return this.availableMoves > 0;
     }
 }
