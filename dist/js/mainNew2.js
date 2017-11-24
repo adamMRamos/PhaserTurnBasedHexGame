@@ -1,6 +1,7 @@
 let game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: preload, create: create, update: update, render:render });
 
 let cursors;
+let currentPlayerIsPlayer1 = true;
 let assetLoader =  new AssetLoader();
 let hexSize = new Point(40,40);
 let origin = new Point(100,100);
@@ -8,9 +9,13 @@ let layout = new Layout(Layout.FLAT, hexSize, origin);
 let hexBoard;
 let marker;
 let hexBoardTranslator;
+let slickUI;
 
 function preload() {
     assetLoader.loadAssets(game);
+    // You can use your own methods of making the plugin publicly available. Setting it as a global variable is the easiest solution.
+    slickUI = game.plugins.add(Phaser.Plugin.SlickUI);
+    slickUI.load('assets/kenney.json'); // Use the path to your kenney.json. This is the file that defines your theme.
 }
 
 function create() {
@@ -46,6 +51,14 @@ function create() {
         spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag, '2');
     });
 
+    const enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+    enterKey.onDown.add(() => {
+        console.log('Pressed ENTER');
+        console.log('Next player: '+(currentPlayerIsPlayer1 ? '2' : '1'));
+        hexBoard.refreshUnits(currentPlayerIsPlayer1 ? '2' : '1');
+        currentPlayerIsPlayer1 = !currentPlayerIsPlayer1;
+    }, this);
+
     let selectedUnit = null;
     game.input.onTap.add(() => {
         const hexBoardPosition = hexBoard.currentPosition();
@@ -53,7 +66,8 @@ function create() {
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
         if (!selectedUnit) {
             selectedUnit = hexBoard.findTopUnitAtPosition(
-                hexBoard.toBoardPosition(game.input.x, game.input.y)
+                hexBoard.toBoardPosition(game.input.x, game.input.y),
+                (currentPlayerIsPlayer1 ? '1' : '2')
             );
         }
         else {
@@ -61,6 +75,9 @@ function create() {
             selectedUnit = null;
         }
     });
+
+    var panel;
+    slickUI.add(panel = new SlickUI.Element.Panel(900, 8, 400, 75));
 }
 
 function update() {
@@ -68,6 +85,15 @@ function update() {
     else if (cursors.down.isDown) hexBoard.addXY(0, -8);
     if (cursors.left.isDown) hexBoard.addXY(+8, 0);
     else if (cursors.right.isDown) hexBoard.addXY(-8, 0);
+
+    if (game.input.activePointer.withinGame) {
+        game.input.enabled = true;
+        game.stage.backgroundColor = '#374d5c';
+    }
+    else {
+        game.input.enabled = false;
+        game.stage.backgroundColor = '#731111';
+    }
 }
 
 function render() {

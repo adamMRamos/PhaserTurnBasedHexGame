@@ -15,7 +15,11 @@ class Unit extends Phaser.Sprite {
     movesLeft() {
         return this.unitFrame.availableMoves;
     }
-    
+
+    restoreMoves() {
+        this.unitFrame.resetMoves();
+    }
+
     setHex(hex, hexBoardTranslator) {
         this.unitFrame.setHex(hex);
         reorientUnitToUnitFrameHex(this, this.unitFrame.hex, hexBoardTranslator);
@@ -32,7 +36,8 @@ class Unit extends Phaser.Sprite {
     }
 
     collideWith(unit, attacker) {
-        console.log('I collided with a unit, I am the '+(attacker ? 'attacker' : 'defender'));
+        console.log('I collided with a unit, I am the '+(attacker ? 'attacker' : 'defender')
+            + ' and I am on team '+this.team);
         this.depleteAvailableActions();
         this.kill();
     }

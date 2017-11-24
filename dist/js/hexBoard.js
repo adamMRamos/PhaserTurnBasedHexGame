@@ -10,7 +10,6 @@ class HexBoard {
         this.layout = new Layout(Layout.FLAT, hexSize, origin);
     }
 
-
     tryToMoveUnitToHex(unit, hex) {
         const possibleUnitToCollideWith = findTopObjectWithHex(this.unitsLayer, hex);
         if (!possibleUnitToCollideWith) {
@@ -23,6 +22,15 @@ class HexBoard {
             UnitCollisionHandler.handleCollision(unit, possibleUnitToCollideWith);
 
         this.cleanUpUnits([unit, possibleUnitToCollideWith]);
+    }
+
+    refreshUnits(teamTag) {
+        this.unitsLayer.forEach(unit => {
+            if (unit.team === teamTag) {
+                console.log('refresh unit on team '+unit.team);
+                unit.restoreMoves();
+            }
+        });
     }
 
     cleanUpUnits(units) {
@@ -57,9 +65,14 @@ class HexBoard {
         return this.hexMapGroup.add(object);
     }
 
-    findTopUnitAtHex(hex) {
+    findTopUnitAtHex(hex, team) {
         const positionOfObject = translator.hexToPixel(this.layout, hex);
-        return findTopObjectWithBoardCoordinates(this.unitsLayer, positionOfObject.x, positionOfObject.y);
+        const foundUnits = findObjectsWithBoardCoodinates(this.unitsLayer, positionOfObject.x, positionOfObject.y);
+        let foundUnit = null;
+        foundUnits.forEach(unit => {
+            if (!foundUnit && unit.team === team) foundUnit = unit;
+        });
+        return foundUnit;
     }
 
     findTopObjectAtHex(hex) {
@@ -67,9 +80,9 @@ class HexBoard {
         return findTopObjectWithBoardCoordinates(this.hexMapGroup, positionOfObject.x, positionOfObject.y);
     }
 
-    findTopUnitAtPosition(position) {
+    findTopUnitAtPosition(position, team) {
         const hexOfObject = Hex.roundHex(translator.pixelToHex(this.layout, position));
-        return this.findTopUnitAtHex(hexOfObject);
+        return this.findTopUnitAtHex(hexOfObject, team);
     }
 
     findTopObjectAtPosition(position) {
@@ -140,6 +153,15 @@ function findTrueDistanceToHex(unit, destinationHex, unitsLayer) {
 
 function pathNotBlocked(possibleBlock, unit) {
     return !possibleBlock || possibleBlock.team === unit.team;
+}
+
+function findObjectsWithBoardCoodinates(groupOfObjects, x, y) {
+    let objectToFind = [];
+    groupOfObjects.forEach(object => {
+        if (object.x === x && object.y === y)
+            objectToFind.push(object);
+    });
+    return objectToFind;
 }
 
 function findTopObjectWithBoardCoordinates(groupOfObjects, x, y) {

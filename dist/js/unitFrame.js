@@ -25,4 +25,8 @@ class UnitFrame {
     hasActionsLeft() {
         return this.availableMoves > 0;
     }
+
+    resetMoves() {
+        this.availableMoves = this.maxMoves;
+    }
 }
