@@ -65,14 +65,10 @@ class HexBoard {
         return this.hexMapGroup.add(object);
     }
 
-    findTopUnitAtHex(hex, team) {
+    findTopUnitAtHex(hex) {
         const positionOfObject = translator.hexToPixel(this.layout, hex);
         const foundUnits = findObjectsWithBoardCoodinates(this.unitsLayer, positionOfObject.x, positionOfObject.y);
-        let foundUnit = null;
-        foundUnits.forEach(unit => {
-            if (!foundUnit && unit.team === team) foundUnit = unit;
-        });
-        return foundUnit;
+        return foundUnits[0];
     }
 
     findTopObjectAtHex(hex) {
@@ -80,9 +76,9 @@ class HexBoard {
         return findTopObjectWithBoardCoordinates(this.hexMapGroup, positionOfObject.x, positionOfObject.y);
     }
 
-    findTopUnitAtPosition(position, team) {
+    findTopUnitAtPosition(position) {
         const hexOfObject = Hex.roundHex(translator.pixelToHex(this.layout, position));
-        return this.findTopUnitAtHex(hexOfObject, team);
+        return this.findTopUnitAtHex(hexOfObject);
     }
 
     findTopObjectAtPosition(position) {

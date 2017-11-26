@@ -91,13 +91,11 @@ function create() {
         console.log('TAP');
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
         if (!selectedUnit) {
-            selectedUnit = hexBoard.findTopUnitAtPosition(
-                hexBoard.toBoardPosition(game.input.x, game.input.y),
-                (currentPlayerIsPlayer1 ? '1' : '2')
-            );
+            selectedUnit = hexBoard.findTopUnitAtPosition(hexBoard.toBoardPosition(game.input.x, game.input.y));
         }
         else {
-            hexBoard.tryToMoveUnitToHex(selectedUnit, hexBoard.toBoardHex(game.input.x, game.input.y));
+            if (selectedUnit.team === (currentPlayerIsPlayer1 ? '1' : '2'))
+                hexBoard.tryToMoveUnitToHex(selectedUnit, hexBoard.toBoardHex(game.input.x, game.input.y));
             selectedUnit = null;
         }
     });
