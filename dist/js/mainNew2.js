@@ -1,7 +1,7 @@
 let game = new Phaser.Game(1500, 725, Phaser.AUTO, 'GameContainer', { preload: preload, create: create, update: update, render:render });
 
 let cursors;
-let currentPlayerIsPlayer1 = true;
+let currentPlayerIsPlayer1 = false;
 let assetLoader =  new AssetLoader();
 let hexSize = new Point(40,40);
 let origin = new Point(100,100);
@@ -51,13 +51,39 @@ function create() {
         spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag, '2');
     });
 
-    const enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    enterKey.onDown.add(() => {
-        console.log('Pressed ENTER');
+    const panel = new SlickUI.Element.Panel(450, 8, 400, 75);
+
+    slickUI.add(panel);
+    const updateCurrentPlayer = () => currentPlayerIsPlayer1 = !currentPlayerIsPlayer1;
+    const updateCurrentPlayerString = () => updateCurrentPlayer() ? '1' : '2';
+    const playerString = 'Player: ';
+    const getPlayerString = () => playerString+updateCurrentPlayerString();
+    const playerTrack = new SlickUI.Element.Text(10, 0, getPlayerString());
+    panel.add(playerTrack);
+
+    let turnCounter = 0;
+    const incrementTurn = () => ++turnCounter;
+    const turnString = 'Turn: ';
+    const updateCurrentTurnString = () => turnString+incrementTurn();
+    const turnTrack = new SlickUI.Element.Text(10, 30, updateCurrentTurnString());
+    panel.add(turnTrack);
+
+    const endTurnAction = () => {
+        console.log('End Turn');
         console.log('Next player: '+(currentPlayerIsPlayer1 ? '2' : '1'));
         hexBoard.refreshUnits(currentPlayerIsPlayer1 ? '2' : '1');
-        currentPlayerIsPlayer1 = !currentPlayerIsPlayer1;
-    }, this);
+
+        playerTrack.value = getPlayerString();
+        turnTrack.value = updateCurrentTurnString();
+    };
+
+    const endTurnButton = new SlickUI.Element.Button(130,5,140,50);
+    panel.add(endTurnButton);
+    endTurnButton.events.onInputUp.add(endTurnAction);
+    endTurnButton.add(new SlickUI.Element.Text(0,0, 'End Turn')).center();
+
+    const enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+    enterKey.onDown.add(endTurnAction, this);
 
     let selectedUnit = null;
     game.input.onTap.add(() => {
@@ -75,9 +101,6 @@ function create() {
             selectedUnit = null;
         }
     });
-
-    var panel;
-    slickUI.add(panel = new SlickUI.Element.Panel(900, 8, 400, 75));
 }
 
 function update() {
