@@ -7,10 +7,12 @@ class AssetLoader {
         this.validAssetNames.marker = {tag: 'marker', path: 'marker'};
         this.validAssetNames.hexMarker = {tag: 'hexMarker', path: 'hexMarker'};
         this.validAssetNames.cube = {tag: 'cube', path: 'cube'};
-        this.validAssetNames.redCube = {tag: 'redCube', path: 'redCube'};
-        this.validAssetNames.diamond = {tag: 'diamond', path: 'diamond'};
+        this.validAssetNames.red_cube = {tag: 'red_cube', path: 'red_cube'};
         this.validAssetNames.sphere = {tag: 'sphere', path: 'sphere'};
+        this.validAssetNames.red_sphere = {tag: 'red_sphere', path: 'red_sphere'};
         this.validAssetNames.triangle = {tag: 'triangle', path: 'triangle'};
+        this.validAssetNames.red_triangle = {tag: 'red_triangle', path: 'red_triangle'};
+        this.validAssetNames.diamond = {tag: 'diamond', path: 'diamond'};
     }
 
     loadAssets(game) {

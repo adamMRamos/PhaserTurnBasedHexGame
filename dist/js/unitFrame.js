@@ -1,8 +1,10 @@
 class UnitFrame {
-    constructor(hex, maxMoves) {
+    constructor(hex, maxMoves, maxActions) {
         this.hex = hex;
         this.maxMoves = maxMoves;
+        this.maxActions = maxActions;
         this.availableMoves = this.maxMoves;
+        this.availableActions = maxActions;
     }
 
     setHex(hex) {
@@ -15,7 +17,6 @@ class UnitFrame {
     }
 
     moveToHex(hex, distance) {
-        //const distance = Hex.hexDistance(this.hex, hex);
         if (distance && distance <= this.maxMoves && distance <= this.availableMoves) {
             this.setHex(hex);
             this.availableMoves -= distance;
@@ -23,10 +24,14 @@ class UnitFrame {
     }
 
     hasActionsLeft() {
-        return this.availableMoves > 0;
+        return this.availableMoves > 0 && this.availableActions > 0;
     }
 
     resetMoves() {
         this.availableMoves = this.maxMoves;
+    }
+
+    resetActions() {
+        this.availableActions = this.maxActions;
     }
 }

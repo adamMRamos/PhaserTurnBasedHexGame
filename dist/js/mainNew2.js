@@ -39,16 +39,45 @@ function create() {
     const player1SpawnHexes = Hex.radiusOfHexes(new Hex(10,0), 1);
     const player2SpawnHexes = Hex.radiusOfHexes(new Hex(2,0), 1);
 
-    const spawnUnitOntoHex = (hex, unitAssetTag, team) => {
-        const unit = new Unit(hexBoardTranslator, game, 0, 0, unitAssetTag, team);
+    const createTagTypeObject = (tag, type) => ({ tag:tag, type:type });
+    const determineUnitTag = (type, team) => {
+        let tagSuffix = '';
+        switch (type) {
+            case Unit.SQUARE: tagSuffix = 'cube'; break;
+            case Unit.CIRCLE: tagSuffix = 'sphere'; break;
+            case Unit.TRIANGLE: tagSuffix = 'triangle'; break;
+        }
+        return (team === 2 ? 'red_' : '') + tagSuffix
+    };
+    const determineUnitType = typeNum => {
+        switch (typeNum) {
+            case 0: return Unit.SQUARE;
+            case 1: return Unit.CIRCLE;
+            case 2: return Unit.TRIANGLE;
+        }
+    };
+    const determineUnitTagAndType = (tagNum, team) => {
+        const type = determineUnitType(tagNum);
+        const tagString = determineUnitTag(type, team);
+        console.log(tagString);
+        return createTagTypeObject(assetLoader.validAssetNames[tagString].tag, type);
+    };
+    const spawnUnitOntoHex = (hex, unitAssetTag, unitType, team) => {
+        const unit = new Unit(hexBoardTranslator, game, 0, 0, unitAssetTag, unitType, team);
         hexBoard.addUnit(unit);
         unit.setHex(hex, hexBoardTranslator);
     };
+    let unitCounter = 0;
     player1SpawnHexes.forEach(hex => {
-        spawnUnitOntoHex(hex, assetLoader.validAssetNames.cube.tag, '1');
+        const unitTagAndType = determineUnitTagAndType(unitCounter, 1);
+        spawnUnitOntoHex(hex, unitTagAndType.tag, unitTagAndType.type, '1');
+        unitCounter = (unitCounter+1)%3;
     });
+    unitCounter = 0;
     player2SpawnHexes.forEach(hex => {
-        spawnUnitOntoHex(hex, assetLoader.validAssetNames.redCube.tag, '2');
+        const unitTagAndType = determineUnitTagAndType(unitCounter, 2);
+        spawnUnitOntoHex(hex, unitTagAndType.tag, unitTagAndType.type, '2');
+        unitCounter = (unitCounter+1)%3;
     });
 
     const panel = new SlickUI.Element.Panel(450, 8, 400, 75);
@@ -90,9 +119,8 @@ function create() {
         const hexBoardPosition = hexBoard.currentPosition();
         console.log('TAP');
         console.log((game.input.x-hexBoardPosition.x)+','+(game.input.y-hexBoardPosition.y));
-        if (!selectedUnit) {
+        if (!selectedUnit)
             selectedUnit = hexBoard.findTopUnitAtPosition(hexBoard.toBoardPosition(game.input.x, game.input.y));
-        }
         else {
             if (selectedUnit.team === (currentPlayerIsPlayer1 ? '1' : '2'))
                 hexBoard.tryToMoveUnitToHex(selectedUnit, hexBoard.toBoardHex(game.input.x, game.input.y));

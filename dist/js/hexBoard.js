@@ -12,23 +12,25 @@ class HexBoard {
 
     tryToMoveUnitToHex(unit, hex) {
         const possibleUnitToCollideWith = findTopObjectWithHex(this.unitsLayer, hex);
-        if (!possibleUnitToCollideWith) {
+        if (possibleUnitToCollideWith && unit !== possibleUnitToCollideWith)
+            UnitCollisionHandler.handleCollision(unit, possibleUnitToCollideWith);
+
+        this.cleanUpUnits([unit, possibleUnitToCollideWith]);
+
+        if (!findTopObjectWithHex(this.unitsLayer, hex)) {
+            console.log('Space is unoccupied');
             const trueDistance = findTrueDistanceToHex(unit, hex, this.unitsLayer);
             unit.moveToHex(hex, trueDistance, {
                 hexToPixel: (hex) => translator.hexToPixel(this.layout, hex)
             });
         }
-        else if (unit !== possibleUnitToCollideWith)
-            UnitCollisionHandler.handleCollision(unit, possibleUnitToCollideWith);
-
-        this.cleanUpUnits([unit, possibleUnitToCollideWith]);
     }
 
     refreshUnits(teamTag) {
         this.unitsLayer.forEach(unit => {
             if (unit.team === teamTag) {
                 console.log('refresh unit on team '+unit.team);
-                unit.restoreMoves();
+                unit.restoreMovesAndActions();
             }
         });
     }
